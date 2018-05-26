@@ -11,5 +11,6 @@
 #include <quiver/adjacency_list.hpp>
 #include <quiver/properties.hpp>
 #include <quiver/util.hpp>
+#include <quiver/search/bfs.hpp>
 
 #endif // !QUIVER_HPP_INCLUDED
