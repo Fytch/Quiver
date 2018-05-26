@@ -12,5 +12,6 @@
 #include <quiver/properties.hpp>
 #include <quiver/util.hpp>
 #include <quiver/search/bfs.hpp>
+#include <quiver/search/dfs.hpp>
 
 #endif // !QUIVER_HPP_INCLUDED
