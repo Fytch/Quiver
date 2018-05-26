@@ -9,7 +9,6 @@
 #define QUIVER_HPP_INCLUDED
 
 #include <quiver/adjacency_list.hpp>
-// #include <quiver/Data.hpp>
 #include <quiver/properties.hpp>
 #include <quiver/util.hpp>
 
