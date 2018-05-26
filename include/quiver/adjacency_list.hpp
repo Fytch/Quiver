@@ -28,9 +28,9 @@ namespace quiver
 
 	// no multiedges, no loops
 	template<
+		directivity_t dir = directed,
 		typename edge_properties_t = void,
 		typename vertex_properties_t = void,
-		directivity_t dir = directed,
 		template<typename> class out_edge_container = vector,
 		template<typename> class vertex_container = vector
 	>
