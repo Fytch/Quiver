@@ -20,6 +20,14 @@ namespace quiver
 	template<typename T>
 	using void2empty = std::conditional_t<std::is_same_v<T, void>, empty_class, T>;
 
+	template<typename from, typename to>
+	using copy_const =
+		std::conditional_t<
+			std::is_const_v<from>,
+			std::add_const_t<std::remove_cv_t<to>>,
+			std::remove_cv_t<to>
+		>;
+
 	template<typename T>
 	constexpr T sq(T const& x)
 	{
