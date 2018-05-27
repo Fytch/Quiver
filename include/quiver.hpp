@@ -10,8 +10,7 @@
 
 #include <quiver/adjacency_list.hpp>
 #include <quiver/properties.hpp>
+#include <quiver/search.hpp>
 #include <quiver/util.hpp>
-#include <quiver/search/bfs.hpp>
-#include <quiver/search/dfs.hpp>
 
 #endif // !QUIVER_HPP_INCLUDED
