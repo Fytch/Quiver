@@ -179,6 +179,7 @@ namespace quiver
 		{
 			m_vertices.emplace_back(std::forward<args_t>(args)...);
 			++m_v;
+			return m_v - 1;
 		}
 		bool remove_vertex(vertex_index_t index)
 		{
