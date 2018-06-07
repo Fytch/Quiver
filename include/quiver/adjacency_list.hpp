@@ -22,9 +22,23 @@ namespace quiver
 	enum directivity_t
 	{
 		directed,
-		// undirected,
+		undirected,
 		// bidirected,
 	};
+
+	template<typename graph_t>
+	struct is_directed : public std::integral_constant<bool, graph_t::directivity == directed>
+	{
+	};
+	template<typename graph_t>
+	inline constexpr bool is_directed_v = is_directed<graph_t>::value;
+
+	template<typename graph_t>
+	struct is_undirected : public std::integral_constant<bool, graph_t::directivity == undirected>
+	{
+	};
+	template<typename graph_t>
+	inline constexpr bool is_undirected_v = is_undirected<graph_t>::value;
 
 	// no multiedges, no loops
 	template<
@@ -65,6 +79,54 @@ namespace quiver
 
 		inline static constexpr directivity_t directivity = dir;
 
+		static constexpr void normalize(vertex_index_t& from, vertex_index_t& to) noexcept
+		{
+			if(from > to)
+				std::swap(from, to);
+		}
+
+		template<typename... args_t>
+		bool add_edge_simple(vertex_index_t from, vertex_index_t to, args_t&&... args)
+		{
+			assert(from < V());
+			assert(to < V());
+			// assert(the edge (from, to) doesn't already exist);
+
+			m_vertices[from].out_edges.emplace_back(to, std::forward<args_t>(args)...);
+			++m_e;
+			return true;
+		}
+		bool remove_edge_simple(vertex_index_t from, vertex_index_t to)
+		{
+			assert(from < V());
+			assert(to < V());
+
+			auto& edges = m_vertices[from].out_edges;
+			for(auto iter = edges.begin(); iter != edges.end(); ++iter)
+			{
+				if(iter->to == to)
+				{
+					edges.erase(iter);
+					--m_e;
+					return true;
+				}
+			}
+			return false;
+		}
+		out_edge_t const* get_edge_simple(vertex_index_t from, vertex_index_t to) const noexcept
+		{
+			assert(from < V());
+			assert(to < V());
+
+			auto& edges = m_vertices[from].out_edges;
+			for(auto iter = edges.begin(); iter != edges.end(); ++iter)
+			{
+				if(iter->to == to)
+					return &*iter;
+			}
+			return nullptr;
+		}
+
 	private:
 		std::size_t m_v = 0, m_e = 0;
 		vertices_t m_vertices;
@@ -84,14 +146,17 @@ namespace quiver
 		}
 		constexpr std::size_t E() const noexcept
 		{
-			return m_e;
+			if constexpr(directivity == directed)
+				return m_e;
+			else if constexpr(directivity == undirected)
+				return m_e / 2;
 		}
 		constexpr std::size_t max_edges() const noexcept
 		{
 			if constexpr(directivity == directed)
 				return sq(V());
-			// else if constexpr(directivity == undirected)
-			// 	return V() * (V() - 1) / 2;
+			else if constexpr(directivity == undirected)
+				return V() * (V() - 1) / 2;
 		}
 
 		vertex_t const& vertex(vertex_index_t index) const noexcept
@@ -146,8 +211,13 @@ namespace quiver
 			assert(to < V());
 			// assert(the edge (from, to) doesn't already exist);
 
-			m_vertices[from].out_edges.emplace_back(to, std::forward<args_t>(args)...);
-			++m_e;
+			if constexpr(directivity == directed) {
+				add_edge_simple(from, to, std::forward<args_t>(args)...);
+			} else if constexpr(directivity == undirected) {
+				add_edge_simple(to, from, std::as_const(args)...);
+				add_edge_simple(from, to, std::forward<args_t>(args)...);
+				// TODO: strong exception safety
+			}
 			return true;
 		}
 		bool remove_edge(vertex_index_t from, vertex_index_t to)
@@ -155,17 +225,18 @@ namespace quiver
 			assert(from < V());
 			assert(to < V());
 
-			auto& edges = m_vertices[from].out_edges;
-			for(auto iter = edges.begin(); iter != edges.end(); ++iter)
-			{
-				if(iter->to == to)
-				{
-					edges.erase(iter);
-					--m_e;
-					return true;
-				}
+			if constexpr(directivity == directed) {
+				return remove_edge_simple(from, to);
+			} else if constexpr(directivity == undirected) {
+				if(from == to)
+					return remove_edge_simple(from, to);
+
+				assert((get_edge_simple(from, to) == nullptr) == (get_edge_simple(to, from) == nullptr));
+				const bool removed = remove_edge_simple(from, to);
+				if(removed)
+					remove_edge_simple(from, to); // TODO: strong exception safety
+				return removed;
 			}
-			return false;
 		}
 
 		out_edge_t const* get_edge(vertex_index_t from, vertex_index_t to) const noexcept
@@ -173,13 +244,9 @@ namespace quiver
 			assert(from < V());
 			assert(to < V());
 
-			auto& edges = m_vertices[from].out_edges;
-			for(auto iter = edges.begin(); iter != edges.end(); ++iter)
-			{
-				if(iter->to == to)
-					return &*iter;
-			}
-			return nullptr;
+			if constexpr(directivity == undirected)
+				normalize(from, to); // so that get_edge(1,0) == get_edge(0,1)
+			return get_edge_simple(from, to);
 		}
 
 		void swap(adjacency_list& rhs) noexcept
