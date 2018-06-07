@@ -239,6 +239,32 @@ namespace quiver
 			}
 		}
 
+		auto v_begin()
+		{
+			return m_vertices.begin();
+		}
+		auto v_begin() const
+		{
+			return m_vertices.begin();
+		}
+		auto v_cbegin() const
+		{
+			return m_vertices.cbegin();
+		}
+		auto v_end()
+		{
+			return m_vertices.end();
+		}
+		auto v_end() const
+		{
+			return m_vertices.end();
+		}
+		auto v_cend() const
+		{
+			return m_vertices.cend();
+		}
+
+		// returns a graph with just the vertices
 		adjacency_list vertices() const
 		{
 			adjacency_list result;
