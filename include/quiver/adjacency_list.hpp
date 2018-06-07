@@ -158,6 +158,10 @@ namespace quiver
 			else if constexpr(directivity == undirected)
 				return V() * (V() - 1) / 2;
 		}
+		constexpr bool empty() const noexcept
+		{
+			return V() == 0;
+		}
 
 		vertex_t const& vertex(vertex_index_t index) const noexcept
 		{
