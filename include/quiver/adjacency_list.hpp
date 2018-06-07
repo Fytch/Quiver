@@ -40,7 +40,7 @@ namespace quiver
 	template<typename graph_t>
 	inline constexpr bool is_undirected_v = is_undirected<graph_t>::value;
 
-	// no multiedges, no loops
+	// no multiedges
 	template<
 		directivity_t dir = directed,
 		typename edge_properties_t = void,
@@ -55,6 +55,9 @@ namespace quiver
 		{
 			using base_t = void2empty<edge_properties_t>;
 			vertex_index_t to;
+
+			base_t const* properties() const noexcept	{ return this; }
+			base_t      * properties()       noexcept	{ return this; }
 
 			template<typename... args_t>
 			out_edge_t(vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
@@ -71,7 +74,18 @@ namespace quiver
 			using base_t = void2empty<vertex_properties_t>;
 			out_edge_list_t out_edges;
 
+			base_t const* properties() const noexcept	{ return this; }
+			base_t      * properties()       noexcept	{ return this; }
+
 			using base_t::base_t;
+			vertex_t(base_t const& properties)
+			: base_t(properties)
+			{
+			}
+			vertex_t(base_t&& properties)
+			: base_t(std::move(properties))
+			{
+			}
 		};
 
 		using vertices_t = vertex_container<vertex_t>;
@@ -275,7 +289,7 @@ namespace quiver
 			adjacency_list result;
 			result.m_vertices.reserve(V());
 			for(auto const& vertex : m_vertices)
-				result.add_vertex(vertex);
+				result.add_vertex(*vertex.properties());
 			return result;
 		}
 
