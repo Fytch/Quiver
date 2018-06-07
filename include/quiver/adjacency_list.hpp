@@ -79,6 +79,10 @@ namespace quiver
 
 		inline static constexpr directivity_t directivity = dir;
 
+	private:
+		std::size_t m_v = 0, m_e = 0;
+		vertices_t m_vertices;
+
 		static constexpr void normalize(vertex_index_t& from, vertex_index_t& to) noexcept
 		{
 			if(from > to)
@@ -126,10 +130,6 @@ namespace quiver
 			}
 			return nullptr;
 		}
-
-	private:
-		std::size_t m_v = 0, m_e = 0;
-		vertices_t m_vertices;
 
 	public:
 		adjacency_list() noexcept
@@ -237,6 +237,15 @@ namespace quiver
 					remove_edge_simple(from, to); // TODO: strong exception safety
 				return removed;
 			}
+		}
+
+		adjacency_list vertices() const
+		{
+			adjacency_list result;
+			result.m_vertices.reserve(V());
+			for(auto const& vertex : m_vertices)
+				result.add_vertex(vertex);
+			return result;
 		}
 
 		out_edge_t const* get_edge(vertex_index_t from, vertex_index_t to) const noexcept
