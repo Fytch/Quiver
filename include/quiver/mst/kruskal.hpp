@@ -19,7 +19,7 @@ namespace quiver
 	template<typename graph_t>
 	std::enable_if_t<is_weighted_v<graph_t>, graph_t> kruskal(graph_t const& graph)
 	{
-		static_assert(is_undirected_v<graph_t>, "kruskal opereaters on undirected graphs");
+		static_assert(is_undirected_v<graph_t>, "kruskal operates on undirected graphs");
 
 		disjoint_set<> cc(graph.V());
 		struct edge_t
