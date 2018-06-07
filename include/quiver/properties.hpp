@@ -63,7 +63,7 @@ namespace quiver
 	};
 	QUIVER_DEFINE_PROPERTY_CHECKER(capacity)
 	template<typename graph_t>
-	struct has_capacities : public std::integral_constant<bool, has_weight_v<typename graph_t::out_edge_t>>
+	struct has_capacities : public std::integral_constant<bool, has_capacity_v<typename graph_t::out_edge_t>>
 	{
 	};
 	template<typename graph_t>
