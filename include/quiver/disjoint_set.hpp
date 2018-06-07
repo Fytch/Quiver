@@ -97,6 +97,7 @@ namespace quiver
 
 		std::vector<std::size_t> m_parent;
 		std::vector<std::size_t> m_card;
+		std::size_t m_sets = 0;
 
 		bool check_size_invariant(std::size_t index)
 		{
@@ -121,12 +122,17 @@ namespace quiver
 			m_card.resize(size, 1);
 			m_parent.resize(size);
 			std::iota(m_parent.begin(), m_parent.end(), std::size_t{});
+			m_sets = size;
 		}
 
 		std::size_t size() const noexcept
 		{
 			assert(m_parent.size() == m_card.size());
 			return m_parent.size();
+		}
+		std::size_t sets() const noexcept
+		{
+			return m_sets;
 		}
 
 		// std::size_t find(std::size_t index) /* const */ noexcept;
@@ -150,6 +156,10 @@ namespace quiver
 			m_parent[min_root] = max_root;
 			m_card[max_root] = m_card[max_root] + m_card[min_root];
 
+			// update the number of sets
+			--m_sets;
+
+			// check invariants
 			assert(check_size_invariant(a));
 			assert(check_size_invariant(b));
 

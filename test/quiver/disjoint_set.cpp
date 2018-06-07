@@ -14,6 +14,7 @@ TEST_CASE("disjoint_set", "[quiver][fundamentals]")
 	const std::size_t N = 10;
 	disjoint_set<> set(N);
 
+	CHECK(set.sets() == N);
 	for(std::size_t i = 0; i < N; ++i) {
 		CHECK(set.find(i) == i);
 		CHECK(set.cardinality(i) == 1);
@@ -23,6 +24,8 @@ TEST_CASE("disjoint_set", "[quiver][fundamentals]")
 	set.unite(2, 3);
 	set.unite(7, 6);
 	set.unite(5, 6);
+
+	CHECK(set.sets() == N - 4);
 
 	CHECK(set.cardinality(0) == 1);
 
@@ -45,6 +48,8 @@ TEST_CASE("disjoint_set", "[quiver][fundamentals]")
 
 	set.unite(7, 2);
 	set.unite(3, 9);
+
+	CHECK(set.sets() == N - 6);
 
 	CHECK(set.cardinality(0) == 1);
 	CHECK(set.cardinality(4) == 1);
