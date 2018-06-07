@@ -10,6 +10,8 @@
 
 #include <quiver/adjacency_list.hpp>
 #include <quiver/container_interface.hpp>
+#include <quiver/disjoint_set.hpp>
+#include <quiver/mst.hpp>
 #include <quiver/properties.hpp>
 #include <quiver/search.hpp>
 #include <quiver/util.hpp>
