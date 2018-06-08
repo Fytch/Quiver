@@ -9,6 +9,7 @@
 #define QUIVER_HPP_INCLUDED
 
 #include <quiver/adjacency_list.hpp>
+#include <quiver/connected_components.hpp>
 #include <quiver/container_interface.hpp>
 #include <quiver/disjoint_set.hpp>
 #include <quiver/mst.hpp>
