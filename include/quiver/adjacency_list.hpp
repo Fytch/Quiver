@@ -108,7 +108,7 @@ namespace quiver
 		{
 			assert(from < V());
 			assert(to < V());
-			// assert(the edge (from, to) doesn't already exist);
+			assert(get_edge_simple(from, to) == nullptr);
 
 			m_vertices[from].out_edges.emplace_back(to, std::forward<args_t>(args)...);
 			++m_e;
