@@ -312,6 +312,14 @@ namespace quiver
 			return get_edge_simple(from, to);
 		}
 
+		template<typename invokable_t>
+		void transform_outs(invokable_t invokable)
+		{
+			for(auto& vertex : m_vertices)
+				for(auto& out_edge : vertex.out_edges)
+					out_edge.to = invokable(out_edge.to);
+		}
+
 		void swap(adjacency_list& rhs) noexcept
 		{
 			using std::swap;
