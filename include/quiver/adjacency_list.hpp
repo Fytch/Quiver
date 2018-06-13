@@ -226,6 +226,10 @@ namespace quiver
 		{
 			m_vertices.reserve(vertices);
 		}
+		std::size_t capacity() const noexcept(noexcept(m_vertices.capacity()))
+		{
+			return m_vertices.capacity();
+		}
 
 		// TODO: should return std::pair<iter, bool>
 		template<typename... args_t>
