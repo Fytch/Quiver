@@ -36,14 +36,24 @@ TEST_CASE("connected_components", "[quiver][fundamentals]")
 	CHECK(list[0].get_edge(0, 1));
 	CHECK(list[0].get_edge(0, 3));
 	CHECK(list[0].get_edge(1, 2));
+	CHECK(list[0].vertex(0).capacity == 0);
+	CHECK(list[0].vertex(1).capacity == 2);
+	CHECK(list[0].vertex(2).capacity == 5);
+	CHECK(list[0].vertex(3).capacity == 9);
 
 	REQUIRE(list[1].V() == 3);
 	CHECK(list[1].get_edge(0, 1));
 	CHECK(list[1].get_edge(0, 2));
 	CHECK(list[1].get_edge(1, 2));
+	CHECK(list[1].vertex(0).capacity == 1);
+	CHECK(list[1].vertex(1).capacity == 3);
+	CHECK(list[1].vertex(2).capacity == 6);
 
 	REQUIRE(list[2].V() == 1);
+	CHECK(list[2].vertex(0).capacity == 4);
 
 	REQUIRE(list[3].V() == 2);
 	CHECK(list[3].get_edge(0, 1));
+	CHECK(list[3].vertex(0).capacity == 7);
+	CHECK(list[3].vertex(1).capacity == 8);
 }
