@@ -12,6 +12,7 @@
 #include <quiver/connected_components.hpp>
 #include <quiver/container_interface.hpp>
 #include <quiver/disjoint_set.hpp>
+#include <quiver/families.hpp>
 #include <quiver/mst.hpp>
 #include <quiver/properties.hpp>
 #include <quiver/search.hpp>
