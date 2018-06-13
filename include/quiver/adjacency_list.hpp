@@ -222,6 +222,11 @@ namespace quiver
 			return true;
 		}
 
+		void reserve(std::size_t vertices)
+		{
+			m_vertices.reserve(vertices);
+		}
+
 		// TODO: should return std::pair<iter, bool>
 		template<typename... args_t>
 		bool add_edge(vertex_index_t from, vertex_index_t to, args_t&&... args)
