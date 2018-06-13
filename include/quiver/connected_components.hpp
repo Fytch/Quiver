@@ -67,10 +67,9 @@ namespace quiver
 		}
 
 		std::vector<adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>> result(ds.sets());
-		// for(vertex_index_t i = 0; i < result.size(); ++i)
-		// 	result[i].reserve(...);
 		for(vertex_index_t v = 0; v < graph.V(); ++v) {
 			auto& cc = result[cc_index[v]];
+			cc.reserve(ds.cardinality(v));
 			auto index = cc.add_vertex(std::move(graph.vertex(v)));
 			for(auto& out_edge : cc.vertex(index).out_edges)
 				out_edge.to = cc_relative[out_edge.to];
