@@ -15,6 +15,7 @@
 #include <quiver/families.hpp>
 #include <quiver/mst.hpp>
 #include <quiver/properties.hpp>
+#include <quiver/regular.hpp>
 #include <quiver/search.hpp>
 #include <quiver/util.hpp>
 
