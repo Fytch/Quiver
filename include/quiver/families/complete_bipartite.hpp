@@ -39,6 +39,38 @@ namespace quiver
 	{
 		return complete_bipartite<>(m, n);
 	}
+
+	template<
+		typename edge_properties_t = void,
+		typename vertex_properties_t = void,
+		template<typename> class out_edge_container = vector,
+		template<typename> class vertex_container = vector
+	>
+	adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>
+	star(std::size_t n)
+	{
+		return complete_bipartite<edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>(n, 1);
+	}
+	inline auto star(std::size_t n)
+	{
+		return star<>(n);
+	}
+
+	template<
+		typename edge_properties_t = void,
+		typename vertex_properties_t = void,
+		template<typename> class out_edge_container = vector,
+		template<typename> class vertex_container = vector
+	>
+	adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>
+	claw()
+	{
+		return star<edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>(3);
+	}
+	inline auto claw()
+	{
+		return claw<>();
+	}
 }
 
 #endif // !QUIVER_FAMILIES_COMPLETE_BIPARTITE_HPP_INCLUDED
