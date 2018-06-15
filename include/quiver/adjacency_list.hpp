@@ -40,6 +40,57 @@ namespace quiver
 	template<typename graph_t>
 	inline constexpr bool is_undirected_v = is_undirected<graph_t>::value;
 
+	template<typename edge_properties_t>
+	struct edge : public void2empty<edge_properties_t>
+	{
+		using base_t = void2empty<edge_properties_t>;
+		vertex_index_t from, to;
+
+		base_t const* properties() const noexcept	{ return this; }
+		base_t      * properties()       noexcept	{ return this; }
+
+		template<typename... args_t>
+		edge(vertex_index_t from, vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
+		: base_t(std::forward<args_t>(args)...), from{ from }, to{ to }
+		{
+		}
+	};
+	template<typename edge_properties_t>
+	struct out_edge : public void2empty<edge_properties_t>
+	{
+		using base_t = void2empty<edge_properties_t>;
+		vertex_index_t to;
+
+		base_t const* properties() const noexcept	{ return this; }
+		base_t      * properties()       noexcept	{ return this; }
+
+		template<typename... args_t>
+		out_edge(vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
+		: base_t(std::forward<args_t>(args)...), to{ to }
+		{
+		}
+	};
+
+	template<typename vertex_properties_t, typename out_edge_list_t>
+	struct vertex : public void2empty<vertex_properties_t>
+	{
+		using base_t = void2empty<vertex_properties_t>;
+		out_edge_list_t out_edges;
+
+		base_t const* properties() const noexcept	{ return this; }
+		base_t      * properties()       noexcept	{ return this; }
+
+		using base_t::base_t;
+		vertex(base_t const& properties)
+		: base_t(properties)
+		{
+		}
+		vertex(base_t&& properties)
+		: base_t(std::move(properties))
+		{
+		}
+	};
+
 	// no multiedges
 	template<
 		directivity_t dir = directed,
@@ -51,43 +102,12 @@ namespace quiver
 	class adjacency_list
 	{
 	public:
-		struct out_edge_t : public void2empty<edge_properties_t>
-		{
-			using base_t = void2empty<edge_properties_t>;
-			vertex_index_t to;
-
-			base_t const* properties() const noexcept	{ return this; }
-			base_t      * properties()       noexcept	{ return this; }
-
-			template<typename... args_t>
-			out_edge_t(vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
-			: base_t(std::forward<args_t>(args)...), to{ to }
-			{
-			}
-		};
-
+		using edge_t = edge<edge_properties_t>;
+		using out_edge_t = out_edge<edge_properties_t>;
 		using out_edge_list_t = out_edge_container<out_edge_t>;
 		static_assert(is_sane_container<out_edge_list_t>, "out_edge_list_t must be sane container");
 
-		struct vertex_t : public void2empty<vertex_properties_t>
-		{
-			using base_t = void2empty<vertex_properties_t>;
-			out_edge_list_t out_edges;
-
-			base_t const* properties() const noexcept	{ return this; }
-			base_t      * properties()       noexcept	{ return this; }
-
-			using base_t::base_t;
-			vertex_t(base_t const& properties)
-			: base_t(properties)
-			{
-			}
-			vertex_t(base_t&& properties)
-			: base_t(std::move(properties))
-			{
-			}
-		};
-
+		using vertex_t = vertex<vertex_properties_t, out_edge_list_t>;
 		using vertices_t = vertex_container<vertex_t>;
 		static_assert(is_sane_container<vertices_t>, "vertices_t must be sane container");
 
