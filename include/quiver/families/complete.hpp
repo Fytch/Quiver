@@ -9,6 +9,7 @@
 #define QUIVER_FAMILIES_COMPLETE_HPP_INCLUDED
 
 #include <quiver/adjacency_list.hpp>
+#include <quiver/regular.hpp>
 #include <cstddef>
 
 namespace quiver
@@ -33,6 +34,12 @@ namespace quiver
 	inline auto complete(std::size_t n)
 	{
 		return complete<>(n);
+	}
+
+	template<typename graph_t>
+	bool is_complete(graph_t const& graph)
+	{
+		return is_regular(graph, graph.V());
 	}
 }
 
