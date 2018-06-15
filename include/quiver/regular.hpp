@@ -8,7 +8,9 @@
 #ifndef QUIVER_REGULAR_HPP_INCLUDED
 #define QUIVER_REGULAR_HPP_INCLUDED
 
+#include <quiver/adjacency_list.hpp>
 #include <limits>
+#include <vector>
 #include <optional>
 
 namespace quiver
@@ -16,7 +18,22 @@ namespace quiver
 	template<typename graph_t>
 	bool is_regular(graph_t const& graph, std::size_t degree) noexcept
 	{
-		return std::all_of(graph.v_begin(), graph.v_end(), [degree](auto const& v){ return v.out_degree() == degree; });
+		if constexpr(is_directed_v<graph_t>) {
+			if(graph.E() != graph.V() * degree)
+				return false;
+			if(!std::all_of(graph.v_begin(), graph.v_end(), [degree](auto const& v){ return v.out_degree() == degree; }))
+				return false;
+			std::vector<std::size_t> in_degrees(graph.V(), 0);
+			for(auto iter = graph.v_begin(); iter != graph.v_end(); ++iter)
+				for(auto const& out_edge : iter->out_edges)
+					if(++in_degrees[out_edge->to] > degree)
+						return false;
+			return true; // we don't need to check that in_degrees[.] == degree, because of the first if-condition
+		} else if constexpr(is_undirected_v<graph_t>) {
+			if(graph.E() != graph.V() * degree / 2)
+				return false;
+			return std::all_of(graph.v_begin(), graph.v_end(), [degree](auto const& v){ return v.out_degree() == degree; });
+		}
 	}
 
 	template<typename graph_t>
