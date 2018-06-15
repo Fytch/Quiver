@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 #include <cassert>
+#include <algorithm>
 
 namespace quiver
 {
@@ -79,6 +80,13 @@ namespace quiver
 
 		base_t const* properties() const noexcept	{ return this; }
 		base_t      * properties()       noexcept	{ return this; }
+
+		std::size_t out_degree() const noexcept		{ return out_edges.size(); }
+
+		bool has_edge_to(vertex_index_t index) const noexcept
+		{
+			return std::any_of(out_edges.begin(), out_edges.end(), [index](auto const& edge){ return edge.to == index; });
+		}
 
 		using base_t::base_t;
 		vertex(base_t const& properties)
@@ -207,6 +215,27 @@ namespace quiver
 			return const_cast<vertex_t&>(static_cast<adjacency_list const&>(*this).vertex(index));
 		}
 
+		std::size_t in_degree(vertex_index_t index) const noexcept
+		{
+			if constexpr(directivity == directed) {
+				std::size_t count = 0;
+				for(auto const& vertex : m_vertices)
+					count += vertex.has_edge_to(index);
+				return count;
+			} else if constexpr(directivity == undirected) {
+				return out_degree(index);
+			}
+		}
+		std::size_t out_degree(vertex_index_t index) const noexcept
+		{
+			return vertex(index).out_degree();
+		}
+		std::size_t degree(vertex_index_t index) const noexcept
+		{
+			static_assert(directivity == undirected, "degree only defined for undirected graphs");
+			return out_degree(index);
+		}
+
 		// TODO: should return iter
 		template<typename... args_t>
 		vertex_index_t add_vertex(args_t&&... args)
@@ -219,9 +248,9 @@ namespace quiver
 		{
 			assert(index < V());
 
-			const std::size_t out_edges = m_vertices[index].out_edges.size();
+			const std::size_t out_degree = m_vertices[index].out_degree();
 			m_vertices.erase(m_vertices.begin() + index);
-			m_e -= out_edges;
+			m_e -= out_degree;
 			--m_v;
 			for(auto& vertex : m_vertices)
 			{
