@@ -11,6 +11,7 @@
 #include <quiver/adjacency_list.hpp>
 #include <cstddef>
 #include <iterator>
+#include <type_traits>
 
 namespace quiver
 {
