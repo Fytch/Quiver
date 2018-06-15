@@ -204,6 +204,10 @@ namespace quiver
 		{
 			return V() == 0;
 		}
+		constexpr bool edgeless() const noexcept
+		{
+			return E() == 0;
+		}
 
 		vertex_t const& vertex(vertex_index_t index) const noexcept
 		{
