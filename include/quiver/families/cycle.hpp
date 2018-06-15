@@ -9,6 +9,7 @@
 #define QUIVER_FAMILIES_CYCLE_HPP_INCLUDED
 
 #include <quiver/adjacency_list.hpp>
+#include <quiver/regular.hpp>
 #include <cassert>
 #include <cstddef>
 #include <type_traits>
@@ -41,17 +42,15 @@ namespace quiver
 
 	/*
 	template<typename graph_t>
-	std::enable_if_t<is_directed_v<graph_t>, bool> is_cycle(graph_t const& graph)
+	std::enable_if_t<is_directed_v<graph_t>, bool> is_cycle_graph(graph_t const& graph)
 	{
 		// TODO: implement
 	}
 	*/
 	template<typename graph_t>
-	std::enable_if_t<is_undirected_v<graph_t>, bool> is_cycle(graph_t const& graph)
+	std::enable_if_t<is_undirected_v<graph_t>, bool> is_cycle_graph(graph_t const& graph)
 	{
-		if(graph.E() != graph.V())
-			return false;
-		return std::all_of(graph.v_begin(), graph.v_end(), [](auto const& v){ return v.out_edges() == 2; });
+		return is_regular(graph, 2);
 	}
 }
 
