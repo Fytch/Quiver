@@ -9,5 +9,6 @@
 #define QUIVER_FAMILIES_HPP_INCLUDED
 
 #include <quiver/families/complete.hpp>
+#include <quiver/families/complete_bipartite.hpp>
 
 #endif // !QUIVER_FAMILIES_HPP_INCLUDED
