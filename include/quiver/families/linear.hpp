@@ -42,6 +42,36 @@ namespace quiver
 	{
 		return linear<>(n);
 	}
+
+	/*
+	template<typename graph_t>
+	std::enable_if_t<is_directed_v<graph_t>, bool> is_linear(graph_t const& graph)
+	{
+		// TODO: implement
+	}
+	*/
+	template<typename graph_t>
+	std::enable_if_t<is_undirected_v<graph_t>, bool> is_linear(graph_t const& graph)
+	{
+		if(graph.empty())
+			return true;
+		if(graph.E() != graph.V() - 1)
+			return false;
+		std::size_t leaves = 0;
+		for(auto iter = graph.v_begin(); iter != graph.v_end(); ++iter) {
+			switch(iter->out_degree()) {
+			case 1:
+				if(++leaves > 2)
+					return false;
+				break;
+			case 2:
+				break;
+			default:
+				return false;
+			}
+		}
+		return leaves == 2;
+	}
 }
 
 #endif // !QUIVER_FAMILIES_LINEAR_HPP_INCLUDED
