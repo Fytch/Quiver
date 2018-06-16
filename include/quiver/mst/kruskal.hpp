@@ -51,11 +51,8 @@ namespace quiver
 		graph_t mst = graph.vertices();
 		for(edge_t const& e : edges)
 		{
-			if(!cc.same_set(e.from, e.to))
-			{
+			if(cc.unite(e.from, e.to))
 				mst.add_edge(e.from, e.to, e.ptr->properties());
-				cc.unite(e.from, e.to);
-			}
 		}
 		return mst;
 	}
@@ -73,11 +70,8 @@ namespace quiver
 			const auto e_end = out_edges.end();
 			for(auto edge = out_edges.begin(); edge != e_end; ++edge)
 				if(v_index < edge->to) // we only need half of the actual edges and no loops
-					if(!cc.same_set(v_index, edge->to))
-					{
+					if(cc.unite(v_index, edge->to))
 						mst.add_edge(v_index, edge->to, edge->properties());
-						cc.unite(v_index, edge->to);
-					}
 		}
 		return mst;
 	}
