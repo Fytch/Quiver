@@ -24,8 +24,8 @@ namespace quiver
 			if(!std::all_of(graph.v_begin(), graph.v_end(), [degree](auto const& v){ return v.out_degree() == degree; }))
 				return false;
 			std::vector<std::size_t> in_degrees(graph.V(), 0);
-			for(auto iter = graph.v_begin(); iter != graph.v_end(); ++iter)
-				for(auto const& out_edge : iter->out_edges)
+			for(auto const& vert : graph)
+				for(auto const& out_edge : vert.out_edges)
 					if(++in_degrees[out_edge->to] > degree)
 						return false;
 			return true; // we don't need to check that in_degrees[.] == degree, because of the first if-condition

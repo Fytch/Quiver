@@ -24,8 +24,8 @@ namespace quiver
 	complete(std::size_t n)
 	{
 		adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> result(n);
-		for(auto iter = result.v_begin(); iter != result.v_end(); ++iter)
-			iter->out_edges.reserve(n - 1);
+		for(auto& vert : result)
+			vert.out_edges.reserve(n - 1);
 		for(std::size_t i = 1; i < n; ++i)
 			for(std::size_t j = 0; j < i; ++j)
 				result.add_edge(i, j);

@@ -36,14 +36,12 @@ namespace quiver
 		{
 			const std::size_t E = graph.E();
 			edges.reserve(E);
-			const auto v_end = graph.v_end();
-			std::size_t v_index = 0;
-			for(auto vert = graph.v_begin(); vert != v_end; ++vert, ++v_index) {
-				auto const& out_edges = vert->out_edges;
-				const auto e_end = out_edges.end();
-				for(auto edge = out_edges.begin(); edge != e_end; ++edge)
-					if(v_index < edge->to) // we only need half of the actual edges and no loops
-						edges.emplace_back(v_index, edge->to, &*edge);
+			vertex_index_t vert_index = 0;
+			for(auto const& vert : graph) {
+				for(auto const& out_edge : vert.out_edges)
+					if(vert_index < out_edge.to) // we only need half of the actual edges and no loops
+						edges.emplace_back(vert_index, out_edge.to, &out_edge);
+				++vert_index;
 			}
 		}
 		std::sort(edges.begin(), edges.end(), [](edge_t const& lhs, edge_t const& rhs){ return lhs.ptr->weight < rhs.ptr->weight; });
@@ -63,15 +61,13 @@ namespace quiver
 
 		graph_t mst = graph.vertices();
 		disjoint_set<> cc(graph.V());
-		const auto v_end = graph.v_end();
-		std::size_t v_index = 0;
-		for(auto vert = graph.v_begin(); vert != v_end; ++vert, ++v_index) {
-			auto const& out_edges = vert->out_edges;
-			const auto e_end = out_edges.end();
-			for(auto edge = out_edges.begin(); edge != e_end; ++edge)
-				if(v_index < edge->to) // we only need half of the actual edges and no loops
-					if(cc.unite(v_index, edge->to))
-						mst.add_edge(v_index, edge->to, edge->properties());
+		vertex_index_t vert_index = 0;
+		for(auto const& vert : graph) {
+			for(auto const& out_edge : vert.out_edges)
+				if(vert_index < out_edge.to) // we only need half of the actual edges and no loops
+					if(cc.unite(vert_index, out_edge.to))
+						mst.add_edge(vert_index, out_edge.to, out_edge.properties());
+			++vert_index;
 		}
 		return mst;
 	}

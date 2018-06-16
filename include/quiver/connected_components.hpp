@@ -22,14 +22,12 @@ namespace quiver
 		static_assert(is_undirected_v<graph_t>, "connected components exist in undirected graphs");
 
 		disjoint_set<> cc(graph.V());
-		const auto v_end = graph.v_end();
-		std::size_t v_index = 0;
-		for(auto vert = graph.v_begin(); vert != v_end; ++vert, ++v_index) {
-			auto const& out_edges = vert->out_edges;
-			const auto e_end = out_edges.end();
-			for(auto edge = out_edges.begin(); edge != e_end; ++edge)
-				if(v_index < edge->to) // we only need half of the actual edges
-					cc.unite(v_index, edge->to);
+		vertex_index_t vert_index = 0;
+		for(auto const& vert : graph) {
+			for(auto const& out_edge : vert.out_edges)
+				if(vert_index < out_edge.to) // we only need half of the actual edges
+					cc.unite(vert_index, out_edge.to);
+			++vert_index;
 		}
 		return cc;
 	}
