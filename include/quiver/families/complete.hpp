@@ -39,7 +39,8 @@ namespace quiver
 	template<typename graph_t>
 	bool is_complete(graph_t const& graph)
 	{
-		return is_regular(graph, graph.V());
+		// return is_regular(graph, graph.V());
+		return graph.E() == graph.max_edges();
 	}
 }
 
