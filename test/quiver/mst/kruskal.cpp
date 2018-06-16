@@ -46,6 +46,7 @@ TEST_CASE("kruskal", "[quiver][mst]")
 			graph.add_edge(2, 5, 7);
 			graph.add_edge(3, 4, 1);
 			graph.add_edge(4, 5, 9);
+			REQUIRE(ccs(graph) == 1);
 
 			auto mst = kruskal(graph);
 			REQUIRE(mst.V() == graph.V());
@@ -68,6 +69,7 @@ TEST_CASE("kruskal", "[quiver][mst]")
 			graph.add_edge(1, 2, 2);
 			graph.add_edge(2, 3, 4);
 			graph.add_edge(4, 5, 9);
+			REQUIRE(ccs(graph) == 2);
 
 			auto mst = kruskal(graph);
 			REQUIRE(mst.V() == graph.V());
