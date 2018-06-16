@@ -12,5 +12,6 @@
 #include <quiver/families/complete_bipartite.hpp>
 #include <quiver/families/cycle.hpp>
 #include <quiver/families/linear.hpp>
+#include <quiver/families/wheel.hpp>
 
 #endif // !QUIVER_FAMILIES_HPP_INCLUDED
