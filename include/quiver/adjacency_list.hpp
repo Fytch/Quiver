@@ -11,10 +11,11 @@
 #include <quiver/util.hpp>
 #include <quiver/properties.hpp>
 #include <quiver/container_interface.hpp>
+#include <cstddef>
+#include <type_traits>
 #include <utility>
-#include <vector>
-#include <cassert>
 #include <algorithm>
+#include <ostream>
 
 namespace quiver
 {
