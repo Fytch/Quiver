@@ -5,8 +5,8 @@
  *	See the enclosed file LICENSE.txt for further information.
  */
 
-#ifndef QUIVER_ADJACENCYLIST_HPP_INCLUDED
-#define QUIVER_ADJACENCYLIST_HPP_INCLUDED
+#ifndef QUIVER_ADJACENCY_LIST_HPP_INCLUDED
+#define QUIVER_ADJACENCY_LIST_HPP_INCLUDED
 
 #include <quiver/util.hpp>
 #include <quiver/properties.hpp>
@@ -392,4 +392,4 @@ namespace quiver
 	};
 }
 
-#endif // !QUIVER_ADJACENCYLIST_HPP_INCLUDED
+#endif // !QUIVER_ADJACENCY_LIST_HPP_INCLUDED
