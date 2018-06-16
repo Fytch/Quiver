@@ -310,4 +310,41 @@ constexpr bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_
 	return is_weighted_v<adjacency_list>;
 }
 
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::begin(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>& graph)
+{
+	return graph.v_begin();
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::begin(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph)
+{
+	return graph.v_begin();
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::cbegin(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph)
+{
+	return graph.v_cbegin();
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::end(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>& graph)
+{
+	return graph.v_end();
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::end(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph)
+{
+	return graph.v_end();
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::cend(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph)
+{
+	return graph.v_cend();
+}
+
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+void quiver::swap(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& lhs, adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& rhs) noexcept
+{
+	lhs.swap(rhs);
+}
+
 #endif // !QUIVER_ADJACENCY_LIST_INL_INCLUDED
