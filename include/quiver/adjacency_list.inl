@@ -34,6 +34,7 @@ bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 	assert(from < V());
 	assert(to < V());
 	assert(get_edge_simple(from, to) == nullptr);
+	assert(from != to); // no loops
 
 	m_vertices[from].out_edges.emplace_back(to, std::forward<args_t>(args)...);
 	++m_e;
@@ -45,6 +46,7 @@ bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 	assert(from < V());
 	assert(to < V());
 
+	// if(from == to) return false;
 	auto& edges = m_vertices[from].out_edges;
 	for(auto iter = edges.begin(); iter != edges.end(); ++iter)
 	{
@@ -63,6 +65,7 @@ auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 	assert(from < V());
 	assert(to < V());
 
+	// if(from == to) return nullptr;
 	auto& edges = m_vertices[from].out_edges;
 	for(auto iter = edges.begin(); iter != edges.end(); ++iter)
 	{
@@ -95,7 +98,7 @@ template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_
 constexpr std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::max_edges() const noexcept
 {
 	if constexpr(directivity == directed)
-		return sq(V());
+		return V() * (V() - 1);
 	else if constexpr(directivity == undirected)
 		return V() * (V() - 1) / 2;
 }
@@ -204,6 +207,9 @@ bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 	if constexpr(directivity == directed) {
 		add_edge_simple(from, to, std::forward<args_t>(args)...);
 	} else if constexpr(directivity == undirected) {
+		add_edge_simple(to, from, std::as_const(args)...);
+		add_edge_simple(from, to, std::forward<args_t>(args)...);
+		/*
 		if(from != to) {
 			add_edge_simple(to, from, std::as_const(args)...);
 			add_edge_simple(from, to, std::forward<args_t>(args)...);
@@ -211,6 +217,7 @@ bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 		} else {
 			add_edge_simple(from, to, std::forward<args_t>(args)...);
 		}
+		*/
 	}
 	return true;
 }
@@ -220,6 +227,7 @@ bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 	assert(from < V());
 	assert(to < V());
 
+	// if(from == to) return false;
 	if constexpr(directivity == directed) {
 		return remove_edge_simple(from, to);
 	} else if constexpr(directivity == undirected) {

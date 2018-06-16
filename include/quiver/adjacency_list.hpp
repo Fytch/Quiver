@@ -99,7 +99,7 @@ namespace quiver
 		}
 	};
 
-	// no multiedges
+	// no loops, no multiedges
 	template<
 		directivity_t dir = directed,
 		typename edge_properties_t = void,
