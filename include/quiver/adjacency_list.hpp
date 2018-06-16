@@ -295,9 +295,13 @@ namespace quiver
 			if constexpr(directivity == directed) {
 				add_edge_simple(from, to, std::forward<args_t>(args)...);
 			} else if constexpr(directivity == undirected) {
-				add_edge_simple(to, from, std::as_const(args)...);
-				add_edge_simple(from, to, std::forward<args_t>(args)...);
-				// TODO: strong exception safety
+				if(from != to) {
+					add_edge_simple(to, from, std::as_const(args)...);
+					add_edge_simple(from, to, std::forward<args_t>(args)...);
+					// TODO: strong exception safety
+				} else {
+					add_edge_simple(from, to, std::forward<args_t>(args)...);
+				}
 			}
 			return true;
 		}
