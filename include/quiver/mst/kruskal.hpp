@@ -42,7 +42,7 @@ namespace quiver
 				auto const& out_edges = vert->out_edges;
 				const auto e_end = out_edges.end();
 				for(auto edge = out_edges.begin(); edge != e_end; ++edge)
-					if(v_index < edge->to) // we only need half of the actual edges
+					if(v_index < edge->to) // we only need half of the actual edges and no loops
 						edges.emplace_back(v_index, edge->to, &*edge);
 			}
 		}
@@ -59,15 +59,28 @@ namespace quiver
 		}
 		return mst;
 	}
-	/*
 	template<typename graph_t>
 	std::enable_if_t<!is_weighted_v<graph_t>, graph_t> kruskal(graph_t const& graph)
 	{
-		static_assert(is_undirected_v<graph_t>, "");
+		static_assert(is_undirected_v<graph_t>, "kruskal operates on undirected graphs");
 
-		// TODO:
+		graph_t mst = graph.vertices();
+		disjoint_set<> cc(graph.V());
+		const auto v_end = graph.v_end();
+		std::size_t v_index = 0;
+		for(auto vert = graph.v_begin(); vert != v_end; ++vert, ++v_index) {
+			auto const& out_edges = vert->out_edges;
+			const auto e_end = out_edges.end();
+			for(auto edge = out_edges.begin(); edge != e_end; ++edge)
+				if(v_index < edge->to) // we only need half of the actual edges and no loops
+					if(!cc.same_set(v_index, edge->to))
+					{
+						mst.add_edge(v_index, edge->to, *edge->properties());
+						cc.unite(v_index, edge->to);
+					}
+		}
+		return mst;
 	}
-	*/
 }
 
 #endif // !QUIVER_MST_KRUSKAL_HPP_INCLUDED

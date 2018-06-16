@@ -82,4 +82,61 @@ TEST_CASE("kruskal", "[quiver][mst]")
 			CHECK(mst.get_edge(4, 5) != nullptr);
 		}
 	}
+	SECTION("unweighted")
+	{
+		using graph_t = adjacency_list<undirected, void, void>;
+		SECTION("empty")
+		{
+			graph_t empty(0);
+			auto mst = kruskal(empty);
+			CHECK(mst.empty());
+		}
+		SECTION("trivial (0 edges)")
+		{
+			graph_t trivial(1);
+			auto mst = kruskal(trivial);
+			CHECK(mst.V() == 1);
+			CHECK(mst.E() == 0);
+		}
+		SECTION("trivial (1 edge)")
+		{
+			graph_t trivial(1);
+			trivial.add_edge(0, 0);
+			auto mst = kruskal(trivial);
+			CHECK(mst.V() == 1);
+			CHECK(mst.E() == 0);
+		}
+		SECTION("1 cc")
+		{
+			graph_t graph(6);
+			graph.add_edge(0, 1);
+			graph.add_edge(0, 2);
+			graph.add_edge(0, 3);
+			graph.add_edge(1, 2);
+			graph.add_edge(2, 3);
+			graph.add_edge(2, 5);
+			graph.add_edge(3, 4);
+			graph.add_edge(4, 5);
+			REQUIRE(ccs(graph) == 1);
+
+			auto mst = kruskal(graph);
+			REQUIRE(mst.V() == graph.V());
+			REQUIRE(mst.E() == graph.V() - 1); // because we have 1 CC
+		}
+		SECTION("2 cc")
+		{
+			graph_t graph(6);
+			graph.add_edge(0, 1);
+			graph.add_edge(0, 2);
+			graph.add_edge(0, 3);
+			graph.add_edge(1, 2);
+			graph.add_edge(2, 3);
+			graph.add_edge(4, 5);
+			REQUIRE(ccs(graph) == 2);
+
+			auto mst = kruskal(graph);
+			REQUIRE(mst.V() == graph.V());
+			REQUIRE(mst.E() == graph.V() - 2); // because we have 2 CCs
+		}
+	}
 }
