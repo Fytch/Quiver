@@ -47,8 +47,8 @@ namespace quiver
 		using base_t = void2empty<edge_properties_t>;
 		vertex_index_t from, to;
 
-		base_t const* properties() const noexcept	{ return this; }
-		base_t      * properties()       noexcept	{ return this; }
+		base_t const& properties() const noexcept	{ return *this; }
+		base_t      & properties()       noexcept	{ return *this; }
 
 		template<typename... args_t>
 		edge(vertex_index_t from, vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
@@ -62,8 +62,8 @@ namespace quiver
 		using base_t = void2empty<edge_properties_t>;
 		vertex_index_t to;
 
-		base_t const* properties() const noexcept	{ return this; }
-		base_t      * properties()       noexcept	{ return this; }
+		base_t const& properties() const noexcept	{ return *this; }
+		base_t      & properties()       noexcept	{ return *this; }
 
 		template<typename... args_t>
 		out_edge(vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
@@ -78,8 +78,8 @@ namespace quiver
 		using base_t = void2empty<vertex_properties_t>;
 		out_edge_list_t out_edges;
 
-		base_t const* properties() const noexcept	{ return this; }
-		base_t      * properties()       noexcept	{ return this; }
+		base_t const& properties() const noexcept	{ return *this; }
+		base_t      & properties()       noexcept	{ return *this; }
 
 		std::size_t out_degree() const noexcept		{ return out_edges.size(); }
 
@@ -355,7 +355,7 @@ namespace quiver
 			adjacency_list result;
 			result.m_vertices.reserve(V());
 			for(auto const& vertex : m_vertices)
-				result.add_vertex(*vertex.properties());
+				result.add_vertex(vertex.properties());
 			return result;
 		}
 

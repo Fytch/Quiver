@@ -53,7 +53,7 @@ namespace quiver
 		{
 			if(!cc.same_set(e.from, e.to))
 			{
-				mst.add_edge(e.from, e.to, *e.ptr->properties());
+				mst.add_edge(e.from, e.to, e.ptr->properties());
 				cc.unite(e.from, e.to);
 			}
 		}
@@ -75,7 +75,7 @@ namespace quiver
 				if(v_index < edge->to) // we only need half of the actual edges and no loops
 					if(!cc.same_set(v_index, edge->to))
 					{
-						mst.add_edge(v_index, edge->to, *edge->properties());
+						mst.add_edge(v_index, edge->to, edge->properties());
 						cc.unite(v_index, edge->to);
 					}
 		}
