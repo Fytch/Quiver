@@ -21,7 +21,7 @@ namespace quiver
 		return std::forward<graph_t>(graph);
 	}
 	template<typename graph_t>
-	std::enable_if_t<is_directed_v<std::decay_t<graph_t>>, std::decay_t<graph_t>> transpose(graph_t&& graph) noexcept
+	std::enable_if_t<is_directed_v<std::decay_t<graph_t>>, std::decay_t<graph_t>> transpose(graph_t&& graph)
 	{
 		std::decay_t<graph_t> result = graph.vertices();
 		for(vertex_index_t v = 0; v < graph.V(); ++v)
