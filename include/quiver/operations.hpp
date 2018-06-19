@@ -8,6 +8,7 @@
 #ifndef QUIVER_OPERATIONS_HPP_INCLUDED
 #define QUIVER_OPERATIONS_HPP_INCLUDED
 
+#include <quiver/operations/complement.hpp>
 #include <quiver/operations/transpose.hpp>
 
 #endif // !QUIVER_OPERATIONS_HPP_INCLUDED
