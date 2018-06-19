@@ -14,6 +14,7 @@
 #include <quiver/disjoint_set.hpp>
 #include <quiver/families.hpp>
 #include <quiver/mst.hpp>
+#include <quiver/operations.hpp>
 #include <quiver/properties.hpp>
 #include <quiver/regular.hpp>
 #include <quiver/search.hpp>
