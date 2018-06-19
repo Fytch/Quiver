@@ -172,7 +172,8 @@ namespace quiver
 		auto v_cend() const;
 
 		// returns a graph with just the vertices
-		adjacency_list vertices() const;
+		adjacency_list vertices() const&;
+		adjacency_list&& vertices() &&;
 
 		out_edge_t const* get_edge(vertex_index_t from, vertex_index_t to) const noexcept;
 
