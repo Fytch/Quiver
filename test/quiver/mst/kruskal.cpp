@@ -20,18 +20,11 @@ TEST_CASE("kruskal", "[quiver][mst]")
 			auto mst = kruskal(empty);
 			CHECK(mst.empty());
 		}
-		SECTION("trivial (0 edges)")
+		SECTION("trivial")
 		{
 			graph_t trivial(1);
 			auto mst = kruskal(trivial);
 			CHECK(mst.V() == 1);
-			CHECK(mst.E() == 0);
-		}
-		SECTION("trivial (1 edge)")
-		{
-			graph_t trivial(1);
-			auto mst = kruskal(trivial);
-			CHECK(mst.V() == 0);
 			CHECK(mst.E() == 0);
 		}
 		SECTION("1 cc")
@@ -95,13 +88,6 @@ TEST_CASE("kruskal", "[quiver][mst]")
 			graph_t trivial(1);
 			auto mst = kruskal(trivial);
 			CHECK(mst.V() == 1);
-			CHECK(mst.E() == 0);
-		}
-		SECTION("trivial (1 edge)")
-		{
-			graph_t trivial(1);
-			auto mst = kruskal(trivial);
-			CHECK(mst.V() == 0);
 			CHECK(mst.E() == 0);
 		}
 		SECTION("1 cc")
