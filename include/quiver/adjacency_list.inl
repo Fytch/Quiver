@@ -369,17 +369,26 @@ std::ostream& quiver::to_dot(std::ostream& stream, adjacency_list<dir, edge_prop
 		stream << "di";
 	stream << "graph\n";
 	stream << "{\n";
-	vertex_index_t vert_index = 0;
-	for(auto const& vert : graph) {
-		for(auto const& out_edge : vert.out_edges)
-			if constexpr(dir == directed) {
-				stream << '\t' << vert_index << "->" << out_edge.to << ";\n";
-			} else if constexpr(dir == undirected) {
-				if(vert_index <= out_edge.to)
-					stream << '\t' << vert_index << "--" << out_edge.to << ";\n";
-			}
-		++vert_index;
+
+	// vertices
+	for(vertex_index_t vert_index = 0; vert_index < graph.V(); ++vert_index)
+		stream << '\t' << vert_index << ";\n";
+
+	// edges
+	{
+		vertex_index_t vert_index = 0;
+		for(auto const& vert : graph) {
+			for(auto const& out_edge : vert.out_edges)
+				if constexpr(dir == directed) {
+					stream << '\t' << vert_index << "->" << out_edge.to << ";\n";
+				} else if constexpr(dir == undirected) {
+					if(vert_index <= out_edge.to)
+						stream << '\t' << vert_index << "--" << out_edge.to << ";\n";
+				}
+			++vert_index;
+		}
 	}
+
 	stream << "}\n";
 	return stream;
 }
