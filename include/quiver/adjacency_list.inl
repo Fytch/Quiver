@@ -150,8 +150,9 @@ template<typename... args_t>
 quiver::vertex_index_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::add_vertex(args_t&&... args)
 {
 	m_vertices.emplace_back(std::forward<args_t>(args)...);
-	++m_v;
-	return m_v - 1;
+	// assert(directivity == directed || m_vertices.back().out_edges.empty()); // we mustn't have this check for split_ccs
+	m_e += m_vertices.back().out_edges.size();
+	return m_v++;
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::remove_vertex(vertex_index_t index)
