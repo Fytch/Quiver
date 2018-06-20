@@ -25,8 +25,7 @@ namespace quiver
 	enum directivity_t
 	{
 		directed,
-		undirected,
-		// bidirected,
+		undirected
 	};
 
 	template<typename graph_t>
