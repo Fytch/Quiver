@@ -182,6 +182,7 @@ namespace quiver
 		void swap(adjacency_list& rhs) noexcept;
 
 		static constexpr bool is_weighted() noexcept;
+		static constexpr bool is_simple() noexcept;
 	};
 
 	template<directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>

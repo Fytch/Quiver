@@ -325,6 +325,11 @@ constexpr bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_
 {
 	return is_weighted_v<adjacency_list>;
 }
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+constexpr bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::is_simple() noexcept
+{
+	return !is_weighted() && directivity == undirected;
+}
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 auto quiver::begin(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>& graph)
