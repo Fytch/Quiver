@@ -128,6 +128,8 @@ namespace quiver
 
 		static constexpr void normalize(vertex_index_t& from, vertex_index_t& to) noexcept;
 
+		bool remove_vertex_simple(vertex_index_t index);
+
 		template<typename... args_t>
 		bool add_edge_simple(vertex_index_t from, vertex_index_t to, args_t&&... args);
 		bool remove_edge_simple(vertex_index_t from, vertex_index_t to);

@@ -24,6 +24,18 @@ constexpr void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::remove_vertex_simple(vertex_index_t index)
+{
+	assert(index < V());
+
+	const std::size_t out_degree = m_vertices[index].out_degree();
+	m_vertices.erase(m_vertices.begin() + index);
+	m_e -= out_degree;
+	--m_v;
+	return true;
+}
+
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 template<typename... args_t>
 bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::add_edge_simple(vertex_index_t from, vertex_index_t to, args_t&&... args)
 {
@@ -159,27 +171,27 @@ bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 {
 	assert(index < V());
 
-	const std::size_t out_degree = m_vertices[index].out_degree();
-	m_vertices.erase(m_vertices.begin() + index);
-	m_e -= out_degree;
-	--m_v;
-	for(auto& vertex : m_vertices)
-	{
-		for(std::size_t i = vertex.out_edges.size(); i-- > 0;)
+	if(remove_vertex_simple(index)) {
+		for(auto& vertex : m_vertices)
 		{
-			if(vertex.out_edges[i].to == index)
+			for(std::size_t i = vertex.out_edges.size(); i-- > 0;)
 			{
-				vertex.out_edges.erase(vertex.out_edges.begin() + i);
-				++i;
-				--m_e;
-			}
-			else if(vertex.out_edges[i].to > index)
-			{
-				--vertex.out_edges[i].to;
+				if(vertex.out_edges[i].to == index)
+				{
+					vertex.out_edges.erase(vertex.out_edges.begin() + i);
+					++i;
+					--m_e;
+				}
+				else if(vertex.out_edges[i].to > index)
+				{
+					--vertex.out_edges[i].to;
+				}
 			}
 		}
+		return true;
+	} else {
+		return false;
 	}
-	return true;
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
