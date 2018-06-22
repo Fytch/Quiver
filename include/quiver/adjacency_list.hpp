@@ -181,6 +181,10 @@ namespace quiver
 		template<typename invokable_t>
 		void transform_outs(invokable_t invokable);
 
+		// returns true iff there was an edge from u to v or from v to u
+		bool contract(vertex_index_t u, vertex_index_t v);
+		vertex_index_t cleave(vertex_index_t v);
+
 		void swap(adjacency_list& rhs) noexcept;
 
 		static constexpr bool is_weighted() noexcept;

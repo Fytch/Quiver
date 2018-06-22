@@ -66,5 +66,34 @@ TEST_CASE("adjacency_list", "[quiver]")
 		REQUIRE(graph.get_edge(3, 1) != nullptr);
 		CHECK(graph.get_edge(1, 3)->weight == 1.5);
 		CHECK(graph.get_edge(3, 1)->weight == 1.5);
+
+		SECTION("contract")
+		{
+			graph_t graph(8);
+			graph.add_edge(0, 2);
+			graph.add_edge(0, 3);
+			graph.add_edge(1, 2);
+			graph.add_edge(2, 3);
+			graph.add_edge(2, 4);
+			graph.add_edge(2, 5);
+			graph.add_edge(3, 5);
+			graph.add_edge(4, 5);
+			graph.add_edge(5, 6);
+			graph.add_edge(5, 7);
+
+			CHECK(graph.V() == 8);
+			CHECK(graph.E() == 10);
+			CHECK(graph.contract(2, 5) == true);
+			CHECK(graph.V() == 7);
+			CHECK(graph.E() == 7);
+
+			CHECK(graph.get_edge(0, 2) != nullptr);
+			CHECK(graph.get_edge(0, 3) != nullptr);
+			CHECK(graph.get_edge(1, 2) != nullptr);
+			CHECK(graph.get_edge(2, 3) != nullptr);
+			CHECK(graph.get_edge(2, 4) != nullptr);
+			CHECK(graph.get_edge(2, 5) != nullptr);
+			CHECK(graph.get_edge(2, 6) != nullptr);
+		}
 	}
 }

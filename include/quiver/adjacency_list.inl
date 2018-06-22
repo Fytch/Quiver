@@ -324,6 +324,99 @@ void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::contract(vertex_index_t u, vertex_index_t v)
+{
+	// TODO: this function currently doesn't provide strong exception safety
+
+	assert(u < V());
+	assert(v < V());
+	assert(u != v);
+
+	// wlog u < v
+	if(u > v)
+		std::swap(u, v);
+
+	bool has_uv_or_vu = false;
+	const auto rename = [v](vertex_index_t i) noexcept -> vertex_index_t { return i - (i > v); };
+
+	// this block can be implemented more efficiently for different out_edge_container data structures
+	{
+		std::vector<bool> u_connectivity(V(), false);
+		{
+			// find neighborhood of u
+			typename out_edge_list_t::iterator uv;
+			auto& out_edges = vertex(u).out_edges;
+			for(auto iter = out_edges.begin(); iter != out_edges.end(); ++iter) {
+				u_connectivity[iter->to] = true;
+				if(iter->to == v)
+					uv = iter;
+			}
+			// remove u -> v edge
+			if(u_connectivity[v]) {
+				has_uv_or_vu = true;
+				out_edges.erase(uv);
+				--m_e;
+			}
+		}
+		// add v's neighborhood to u's neighborhood
+		for(auto& out_edge : vertex(v).out_edges) {
+			const bool is_vu = (out_edge.to == u);
+			has_uv_or_vu |= is_vu;
+			if(!is_vu && !u_connectivity[out_edge.to])
+				add_edge_simple(u, out_edge.to, std::move(out_edge.properties()));
+		}
+	}
+	remove_vertex_simple(v);
+
+	// relabel all i -> j edges and remove duplicates if j = u,v
+	for(vertex_index_t i = 0; i < V(); ++i) {
+		if(i == u)
+			continue;
+		auto& out_edges = vertex(i).out_edges;
+		auto iter = out_edges.begin();
+		// find the first instance of an i -> u or i -> v edge
+		for(; iter != out_edges.end(); ++iter) {
+			if(iter->to == u || iter->to == v) {
+				iter->to = u;
+				++iter;
+				break;
+			}
+			iter->to = rename(iter->to);
+		}
+		// find the second instance of an i -> u or i -> v edge
+		for(; iter != out_edges.end(); ++iter) {
+			if(iter->to == u || iter->to == v) {
+				iter = std::prev(out_edges.erase(iter));
+				--m_e;
+				continue; // we need to rename the rest
+			}
+			iter->to = rename(iter->to);
+		}
+	}
+	// relabel all u -> j edges
+	for(auto& out_edge : vertex(u).out_edges)
+		out_edge.to = rename(out_edge.to);
+
+	return has_uv_or_vu;
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+quiver::vertex_index_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::cleave(vertex_index_t v)
+{
+	assert(v < V());
+
+	// TODO: currently doesn't provide strong exception safety
+	vertex_index_t new_v = add_vertex(vertex(v));
+	for(vertex_index_t i = 0; i < V(); ++i)
+		if(i != v && i != new_v)
+			for(auto& out_edge : vertex(i).out_edges)
+				if(out_edge.to == v) {
+					add_edge_simple(i, new_v, out_edge.properties());
+					break;
+				}
+	return new_v;
+}
+
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::swap(adjacency_list& rhs) noexcept
 {
 	using std::swap;
