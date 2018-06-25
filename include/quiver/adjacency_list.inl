@@ -286,7 +286,7 @@ template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_
 auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertices() const& -> adjacency_list
 {
 	adjacency_list result;
-	result.m_vertices.reserve(V());
+	result.reserve(V());
 	for(auto const& vertex : m_vertices)
 		result.add_vertex(vertex.properties());
 	return result;
