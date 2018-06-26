@@ -9,6 +9,7 @@
 #define QUIVER_CONTAINER_INTERFACE_HPP_INCLUDED
 
 #include <vector>
+#include <list>
 #include <type_traits>
 #include <iterator>
 #include <algorithm>
@@ -17,6 +18,8 @@ namespace quiver
 {
 	template<typename T>
 	using vector = std::vector<T>;
+	template<typename T>
+	using list = std::list<T>;
 
 	template<typename T>
 	inline constexpr bool is_sane_container =
@@ -35,6 +38,10 @@ namespace quiver
 		struct is_ordered_helper<vector<T>> : std::true_type
 		{
 		};
+		template<typename T>
+		struct is_ordered_helper<list<T>> : std::true_type
+		{
+		};
 	}
 	template<typename container_t>
 	inline constexpr bool is_ordered = detail::is_ordered_helper<container_t>::value;
@@ -48,6 +55,11 @@ namespace quiver
 	{
 		using std::begin, std::end;
 		std::sort(begin(container), end(container), comparator);
+	}
+	template<typename T, typename comparator_t>
+	void sort(list<T>& container, comparator_t comparator)
+	{
+		container.sort(comparator);
 	}
 }
 
