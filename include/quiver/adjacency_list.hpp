@@ -89,6 +89,11 @@ namespace quiver
 			return std::any_of(out_edges.begin(), out_edges.end(), [index](auto const& edge){ return edge.to == index; });
 		}
 
+		void sort_edges()
+		{
+			sort(out_edges, [](auto const& x, auto const& y){ return x.to < y.to; });
+		}
+
 		using base_t::base_t;
 		vertex(base_t const& properties)
 		: base_t(properties)
@@ -180,6 +185,7 @@ namespace quiver
 
 		template<typename invokable_t>
 		void transform_outs(invokable_t invokable);
+		void sort_edges();
 
 		// returns true iff there was an edge from u to v or from v to u
 		bool contract(vertex_index_t u, vertex_index_t v);

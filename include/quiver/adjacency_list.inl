@@ -322,6 +322,13 @@ void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 		for(auto& out_edge : vertex.out_edges)
 			out_edge.to = invokable(out_edge.to);
 }
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::sort_edges()
+{
+	if constexpr(is_ordered<out_edge_list_t>)
+		for(auto& vertex : m_vertices)
+			vertex.sort_edges();
+}
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::contract(vertex_index_t u, vertex_index_t v)
