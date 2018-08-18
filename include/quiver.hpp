@@ -14,6 +14,7 @@
 #include <quiver/disjoint_set.hpp>
 #include <quiver/exception.hpp>
 #include <quiver/families.hpp>
+#include <quiver/heaps.hpp>
 #include <quiver/mst.hpp>
 #include <quiver/operations.hpp>
 #include <quiver/orientation.hpp>
