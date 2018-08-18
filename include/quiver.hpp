@@ -12,6 +12,7 @@
 #include <quiver/connected_components.hpp>
 #include <quiver/container_interface.hpp>
 #include <quiver/disjoint_set.hpp>
+#include <quiver/exception.hpp>
 #include <quiver/families.hpp>
 #include <quiver/mst.hpp>
 #include <quiver/operations.hpp>
@@ -19,6 +20,7 @@
 #include <quiver/properties.hpp>
 #include <quiver/regular.hpp>
 #include <quiver/search.hpp>
+#include <quiver/toposort.hpp>
 #include <quiver/util.hpp>
 
 #endif // !QUIVER_HPP_INCLUDED
