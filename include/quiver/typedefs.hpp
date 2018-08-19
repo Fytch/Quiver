@@ -9,6 +9,7 @@
 #define QUIVER_TYPEDEFS_HPP_INCLUDED
 
 #include <cstddef>
+#include <type_traits>
 
 namespace quiver
 {
