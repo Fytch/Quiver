@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -ggdb -fno-omit-frame-poi
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -flto -DNDEBUG")
 
 include_directories("./include/")
-include_directories("./ext/")
+include_directories("./ext/Catch2/single_include/catch2/")
 
 add_executable(Quiver src/quiver.cpp)
 find_package(Threads REQUIRED)
