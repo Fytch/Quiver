@@ -22,6 +22,7 @@
 #include <quiver/regular.hpp>
 #include <quiver/search.hpp>
 #include <quiver/toposort.hpp>
+#include <quiver/typedefs.hpp>
 #include <quiver/util.hpp>
 
 #endif // !QUIVER_HPP_INCLUDED

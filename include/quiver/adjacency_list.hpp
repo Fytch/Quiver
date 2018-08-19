@@ -8,6 +8,7 @@
 #ifndef QUIVER_ADJACENCY_LIST_HPP_INCLUDED
 #define QUIVER_ADJACENCY_LIST_HPP_INCLUDED
 
+#include <quiver/typedefs.hpp>
 #include <quiver/util.hpp>
 #include <quiver/properties.hpp>
 #include <quiver/container_interface.hpp>
@@ -20,28 +21,6 @@
 
 namespace quiver
 {
-	using vertex_index_t = std::size_t;
-
-	enum directivity_t
-	{
-		directed,
-		undirected
-	};
-
-	template<typename graph_t>
-	struct is_directed : public std::integral_constant<bool, graph_t::directivity == directed>
-	{
-	};
-	template<typename graph_t>
-	inline constexpr bool is_directed_v = is_directed<graph_t>::value;
-
-	template<typename graph_t>
-	struct is_undirected : public std::integral_constant<bool, graph_t::directivity == undirected>
-	{
-	};
-	template<typename graph_t>
-	inline constexpr bool is_undirected_v = is_undirected<graph_t>::value;
-
 	template<typename edge_properties_t>
 	struct edge : public void2empty<edge_properties_t>
 	{
