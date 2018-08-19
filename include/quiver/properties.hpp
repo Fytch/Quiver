@@ -48,6 +48,8 @@ namespace quiver
 	};
 	template<typename graph_t>
 	inline constexpr bool is_weighted_v = is_weighted<graph_t>::value;
+	template<typename graph_t>
+	using weight_type = decltype(graph_t::out_edge_t::weight);
 
 	// capacity
 	template<typename T>
@@ -68,6 +70,8 @@ namespace quiver
 	};
 	template<typename graph_t>
 	inline constexpr bool has_capacities_v = has_capacities<graph_t>::value;
+	template<typename graph_t>
+	using capacity_type = decltype(graph_t::out_edge_t::capacity);
 
 	// combinator of different properties
 	template<typename... T>
