@@ -100,7 +100,7 @@ namespace quiver
 		using out_edge_list_t = out_edge_container<out_edge_t>;
 		static_assert(is_sane_container<out_edge_list_t>, "out_edge_list_t must be sane container");
 
-		using vertex_t = vertex<vertex_properties_t, out_edge_list_t>;
+		using vertex_t = ::quiver::vertex<vertex_properties_t, out_edge_list_t>;
 		using vertices_t = vertex_container<vertex_t>;
 		static_assert(is_sane_container<vertices_t>, "vertices_t must be sane container");
 
