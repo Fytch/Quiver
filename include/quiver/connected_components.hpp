@@ -42,18 +42,15 @@ namespace quiver
 	std::vector<adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>>
 	split_ccs(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph)
 	{
+		using graph_t = adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>;
 		auto ds = get_disjoint_set(graph);					// vertex [0..V] -> root [0..V]
 
-		std::vector<std::size_t> cc_index(graph.V());		// vertex [0..V] -> cc index [0..|CC|]
+		std::unordered_map<vertex_index_t, vertex_index_t> compressed_cc_index; // disjoint set roots -> cc index [0..|CC|]
 		{
-			std::size_t counter = 0;
-			std::unordered_map<std::size_t, std::size_t> cc_map;
 			for(vertex_index_t v = 0; v < graph.V(); ++v) {
-				const std::size_t root = ds.find(v);
-				auto insertion = cc_map.emplace(root, counter);
-				if(insertion.second)
-					++counter;
-				cc_index[v] = insertion.first->second;
+				vertex_index_t parent_v = ds.find(v);
+				if(compressed_cc_index.count(parent_v) == 0)
+					compressed_cc_index.emplace(parent_v, compressed_cc_index.size());
 			}
 		}
 
@@ -61,12 +58,12 @@ namespace quiver
 		{
 			std::vector<std::size_t> counters(ds.sets(), 0);
 			for(vertex_index_t v = 0; v < graph.V(); ++v)
-				cc_relative[v] = counters[cc_index[ds.find(v)]]++;
+				cc_relative[v] = counters[compressed_cc_index[ds.find(v)]]++;
 		}
 
-		std::vector<adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>> result(ds.sets());
+		std::vector<graph_t> result(ds.sets());
 		for(vertex_index_t v = 0; v < graph.V(); ++v) {
-			auto& cc = result[cc_index[v]];
+			auto& cc = result[compressed_cc_index[ds.find(v)]];
 			cc.reserve(ds.cardinality(v));
 			auto index = cc.add_vertex(std::move(graph.vertex(v)));
 			for(auto& out_edge : cc.vertex(index).out_edges)
