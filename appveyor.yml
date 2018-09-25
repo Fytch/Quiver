@@ -1,16 +1,10 @@
 version: '{build}'
 
-shallow_clone: true
+shallow_clone: false
 
 environment:
   MSBUILD_FLAGS: /verbosity:minimal /maxcpucount
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      COMPILER: Visual Studio 14 2015
-      CMAKE_GEN: "Visual Studio 14 2015"
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      COMPILER: Visual Studio 14 2015
-      CMAKE_GEN: "Visual Studio 14 2015 Win64"
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       COMPILER: Visual Studio 15 2017
       CMAKE_GEN: "Visual Studio 15 2017"
@@ -21,20 +15,28 @@ environment:
 matrix:
   fast_finish: true
 
+platform:
+  - x86
+  - x64
 configuration: Debug
 
-init: []
+init:
+  - uname -a
+  - cmake --version
+  - msbuild /version
 
-install: []
+install:
+  - git submodule update --init --recursive
 
 before_build:
   - mkdir bin
   - cd bin
-  - cmake --version
   - cmake .. -G "%CMAKE_GEN%"
 
 build_script:
-  - cmake --build . --config "%CONFIGURATION%" -- %MSBUILD_FLAGS%
+  - echo foo
+# - cmake --build . --config "%CONFIGURATION%" -- %MSBUILD_FLAGS%
 
-after_build:
-  - "%CONFIGURATION%\\Test"
+test_script:
+  - echo foo
+# - "%CONFIGURATION%\\Test"
