@@ -43,13 +43,13 @@ namespace quiver
 	split_ccs(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph)
 	{
 		using graph_t = adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>;
-		auto ds = get_disjoint_set(graph);										// vertex [0..V] -> root [0..V]
+		auto ds = get_disjoint_set(graph);									// vertex [0..V] -> root [0..V]
 
-		std::unordered_map<vertex_index_t, vertex_index_t> compressed_cc_index; // disjoint set roots -> cc index [0..|CC|]
+		std::unordered_map<std::size_t, std::size_t> compressed_cc_index;	// disjoint set roots -> cc index [0..|CC|]
 		for(vertex_index_t v = 0; v < graph.V(); ++v)
 			compressed_cc_index.try_emplace(ds.find(v), compressed_cc_index.size());
 
-		std::vector<std::size_t> cc_relative(graph.V());						// vertex [0..V] -> index in cc [0..V-|CC|+1]
+		std::vector<std::size_t> cc_relative(graph.V());					// vertex [0..V] -> index in cc [0..V-|CC|+1]
 		{
 			std::vector<std::size_t> counters(ds.sets(), 0);
 			for(vertex_index_t v = 0; v < graph.V(); ++v)
