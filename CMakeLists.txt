@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF) # otherwise, CMake will pass -std=gnu++17 to clang
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
-	CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
-	CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+   CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
+   CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 	set(QUIVER_GNU_OPTIONS TRUE)
 endif()
 
@@ -16,12 +16,17 @@ if(QUIVER_GNU_OPTIONS)
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native -DNDEBUG -s -flto")
 endif()
 
-include_directories("./include/")
-include_directories("./ext/Catch2/single_include/catch2/")
+add_library(Quiver INTERFACE)
+target_include_directories(Quiver INTERFACE "./include/")
 
-add_executable(Quiver src/quiver.cpp)
+add_executable(QuiverFrontend src/quiver.cpp)
 find_package(Threads REQUIRED)
-target_link_libraries(Quiver ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(QuiverFrontend PRIVATE
+	${CMAKE_THREAD_LIBS_INIT}
+	Quiver
+)
 
-file(GLOB_RECURSE Quiver_Test test/*.cpp)
-add_executable(Test ${Quiver_Test})
+file(GLOB_RECURSE QuiverTest test/*.cpp)
+add_executable(Test ${QuiverTest})
+target_include_directories(Test PRIVATE "./ext/Catch2/single_include/catch2/")
+target_link_libraries(Test PRIVATE Quiver)
