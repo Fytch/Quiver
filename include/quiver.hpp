@@ -21,6 +21,7 @@
 #include <quiver/properties.hpp>
 #include <quiver/regular.hpp>
 #include <quiver/search.hpp>
+#include <quiver/strongly_connected_components.hpp>
 #include <quiver/toposort.hpp>
 #include <quiver/typedefs.hpp>
 #include <quiver/util.hpp>
