@@ -351,18 +351,22 @@ bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 		std::vector<bool> u_connectivity(V(), false);
 		{
 			// find neighborhood of u
-			typename out_edge_list_t::iterator uv;
 			auto& out_edges = vertex(u).out_edges;
 			for(auto iter = out_edges.begin(); iter != out_edges.end(); ++iter) {
+				if(iter->to == v) {
+					has_uv_or_vu = true;
+					typename out_edge_list_t::iterator uv = iter;
+
+					// do the rest of out_edges here because we can spare us the if above
+					for(++iter; iter != out_edges.end(); ++iter)
+						u_connectivity[iter->to] = true;
+
+					// remove u -> v edge
+					out_edges.erase(uv);
+					--m_e;
+					break;
+				}
 				u_connectivity[iter->to] = true;
-				if(iter->to == v)
-					uv = iter;
-			}
-			// remove u -> v edge
-			if(u_connectivity[v]) {
-				has_uv_or_vu = true;
-				out_edges.erase(uv);
-				--m_e;
 			}
 		}
 		// add v's neighborhood to u's neighborhood
