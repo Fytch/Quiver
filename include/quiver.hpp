@@ -1,6 +1,7 @@
 /*
  *	Quiver - A graph theory library
  *	Copyright (C) 2018 Josua Rieder (josua.rieder1996@gmail.com)
+ *                     Pascal Sommer (p@pascalsommer.ch)
  *	Distributed under the MIT License.
  *	See the enclosed file LICENSE.txt for further information.
  */
@@ -21,6 +22,7 @@
 #include <quiver/properties.hpp>
 #include <quiver/regular.hpp>
 #include <quiver/search.hpp>
+#include <quiver/strongly_connected_components.hpp>
 #include <quiver/toposort.hpp>
 #include <quiver/typedefs.hpp>
 #include <quiver/util.hpp>
