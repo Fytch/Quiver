@@ -93,7 +93,7 @@ namespace quiver
 
 		for(vertex_index_t start_node = 0; start_node < graph.V(); ++start_node) {
 			if(!state.discovered[start_node])
-				tarjan_recurse(start_node, graph, state);
+				tarjan_detail::tarjan_recurse(start_node, graph, state);
 		}
 
 		return state.node_to_scc_index_mapping;
