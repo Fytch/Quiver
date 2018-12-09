@@ -58,7 +58,7 @@ namespace quiver
 			state.scc_stack.push(v);
 			state.on_scc_stack[v] = true;
 
-			for(const auto& out_edge : graph.vertex(v).out_edges) {
+			for(auto const& out_edge : graph.vertex(v).out_edges) {
 				vertex_index_t w = out_edge.to;
 				if(!state.discovered[w]) {
 					tarjan_recurse(w, graph, state);
