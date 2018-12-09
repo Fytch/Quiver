@@ -96,7 +96,7 @@ namespace quiver
 				tarjan_detail::tarjan_recurse(start_node, graph, state);
 		}
 
-		return state.node_to_scc_index_mapping;
+		return std::move(state.node_to_scc_index_mapping);
 	}
 }
 
