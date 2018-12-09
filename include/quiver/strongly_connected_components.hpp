@@ -18,24 +18,26 @@ namespace quiver
 {
 	namespace tarjan_detail
 	{
-		struct tarjan_state{
+		struct tarjan_state
+		{
 			std::vector<bool> discovered;
 			std::vector<std::size_t> scc_index;
 			std::vector<vertex_index_t> lowlink;
 			std::stack<std::size_t> scc_stack;
 			std::vector<bool> on_scc_stack;
-			std::size_t current_scc_index {0};
+			std::size_t current_scc_index = 0;
 
-			std::size_t nr_sccs_found {0};
+			std::size_t nr_sccs_found = 0;
 			std::vector<std::size_t> node_to_scc_index_mapping;
 
 			tarjan_state(std::size_t V)
-				: discovered(V, false),
-				  scc_index(V),
-				  lowlink(V),
-				  on_scc_stack(V, false),
-				  node_to_scc_index_mapping(V)
-			{}
+				: discovered(V, false)
+				, scc_index(V)
+				, lowlink(V)
+				, on_scc_stack(V, false)
+				, node_to_scc_index_mapping(V)
+			{
+			}
 		};
 
 		template<
@@ -73,7 +75,7 @@ namespace quiver
 					state.on_scc_stack[w] = false;
 					state.node_to_scc_index_mapping[w] = state.nr_sccs_found;
 				} while (w != v);
-				++ state.nr_sccs_found;
+				++state.nr_sccs_found;
 			}
 		}
 	}
