@@ -1,7 +1,7 @@
 language: cpp
 
-dist: trusty
-sudo: required
+sudo: false
+dist: xenial
 
 notifications:
   email: false
@@ -15,7 +15,9 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-7
-      env: COMPILER=g++-7
+      env:
+        - CC=gcc-7
+        - CXX=g++-7
     - compiler: gcc
       addons:
         apt:
@@ -23,24 +25,79 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-8
-      env: COMPILER=g++-8
-
-# Compilation on Clang 6.0 + libc++ fails because
-# the <type_traits> template variables like std::is_same_v aren't defined
-
-#   - compiler: clang
-#     addons:
-#       apt:
-#         sources:
-#           - ubuntu-toolchain-r-test
-#           - llvm-toolchain-trusty-6.0
-#         packages:
-#           - clang-6.0
-#           - libc++-dev
-#           - libc++abi-dev
-#     env:
-#       - COMPILER=clang++-6.0
-#       - CMAKE_FLAGS="-DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_EXE_LINKER_FLAGS=-lc++"
+      env:
+        - CC=gcc-8
+        - CXX=g++-8
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-9
+      env:
+        - CC=gcc-9
+        - CXX=g++-9
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages:
+            - clang-5.0
+      env:
+        - CC=clang-5.0
+        - CXX=clang++-5.0
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages:
+            - clang-6.0
+      env:
+        - CC=clang-6.0
+        - CXX=clang++-6.0
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages:
+            - clang-7
+      env:
+        - CC=clang-7
+        - CXX=clang++-7
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages:
+            - clang-8
+      env:
+        - CC=clang-8
+        - CXX=clang++-8
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages:
+            - clang-9
+      env:
+        - CC=clang-9
+        - CXX=clang++-9
 
 script:
   - uname -a
@@ -49,7 +106,7 @@ script:
 
   - mkdir bin
   - cd bin
-  - cmake .. $CMAKE_FLAGS -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_CXX_COMPILER=$COMPILER
+  - cmake .. $CMAKE_FLAGS -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX
   - cmake --build .
 
   - ./Test
