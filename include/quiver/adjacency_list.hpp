@@ -22,21 +22,6 @@
 namespace quiver
 {
 	template<typename edge_properties_t>
-	struct edge : public void2empty<edge_properties_t>
-	{
-		using base_t = void2empty<edge_properties_t>;
-		vertex_index_t from, to;
-
-		base_t const& properties() const noexcept	{ return *this; }
-		base_t      & properties()       noexcept	{ return *this; }
-
-		template<typename... args_t>
-		edge(vertex_index_t from, vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
-		: base_t(std::forward<args_t>(args)...), from{ from }, to{ to }
-		{
-		}
-	};
-	template<typename edge_properties_t>
 	struct out_edge : public void2empty<edge_properties_t>
 	{
 		using base_t = void2empty<edge_properties_t>;
@@ -47,7 +32,27 @@ namespace quiver
 
 		template<typename... args_t>
 		out_edge(vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
-		: base_t(std::forward<args_t>(args)...), to{ to }
+		: base_t(std::forward<args_t>(args)...), to(to)
+		{
+		}
+	};
+	template<typename edge_properties_t>
+	struct edge : public void2empty<edge_properties_t>
+	{
+		using base_t = void2empty<edge_properties_t>;
+		vertex_index_t from, to;
+
+		base_t const& properties() const noexcept	{ return *this; }
+		base_t      & properties()       noexcept	{ return *this; }
+
+		template<typename... args_t>
+		edge(vertex_index_t from, vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
+		: base_t(std::forward<args_t>(args)...), from(from), to(to)
+		{
+		}
+
+		edge(vertex_index_t from, out_edge<edge_properties_t> out) noexcept(std::is_nothrow_move_constructible_v<base_t>)
+		: base_t(std::move(out.properties())), from(from), to(out.to)
 		{
 		}
 	};
