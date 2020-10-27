@@ -19,15 +19,15 @@ TEST_CASE("adjacency_list", "[quiver]")
 		CHECK(has_capacities_v<graph_t> == true);
 
 		graph_t graph(3);
-		CHECK(graph.V() == 3);
+		CHECK(graph.V().size() == 3);
 		CHECK(graph.E() == 0);
 
 		graph.add_edge(0, 2, 5, 3.5);
-		CHECK(graph.V() == 3);
+		CHECK(graph.V().size() == 3);
 		CHECK(graph.E() == 1);
 
 		graph.add_edge(2, 0, 7, 1.0);
-		CHECK(graph.V() == 3);
+		CHECK(graph.V().size() == 3);
 		CHECK(graph.E() == 2);
 
 		REQUIRE(graph.get_edge(0, 2) != nullptr);
@@ -46,15 +46,15 @@ TEST_CASE("adjacency_list", "[quiver]")
 		CHECK(has_capacities_v<graph_t> == false);
 
 		graph_t graph(4);
-		CHECK(graph.V() == 4);
+		CHECK(graph.V().size() == 4);
 		CHECK(graph.E() == 0);
 
 		graph.add_edge(0, 2, 2.5);
-		CHECK(graph.V() == 4);
+		CHECK(graph.V().size() == 4);
 		CHECK(graph.E() == 1);
 
 		graph.add_edge(3, 1, 1.5);
-		CHECK(graph.V() == 4);
+		CHECK(graph.V().size() == 4);
 		CHECK(graph.E() == 2);
 
 		REQUIRE(graph.get_edge(0, 2) != nullptr);
@@ -81,10 +81,10 @@ TEST_CASE("adjacency_list", "[quiver]")
 			graph.add_edge(5, 6);
 			graph.add_edge(5, 7);
 
-			CHECK(graph.V() == 8);
+			CHECK(graph.V().size() == 8);
 			CHECK(graph.E() == 10);
 			CHECK(graph.contract(2, 5) == true);
-			CHECK(graph.V() == 7);
+			CHECK(graph.V().size() == 7);
 			CHECK(graph.E() == 7);
 
 			CHECK(graph.get_edge(0, 2) != nullptr);

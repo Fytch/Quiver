@@ -19,20 +19,20 @@ namespace quiver
 	bool is_regular(graph_t const& graph, std::size_t degree) noexcept
 	{
 		if constexpr(is_directed_v<graph_t>) {
-			if(graph.E() != graph.V() * degree)
+			if(graph.E() != graph.V().size() * degree)
 				return false;
-			if(!std::all_of(graph.v_begin(), graph.v_end(), [degree](auto const& v){ return v.out_degree() == degree; }))
+			if(!std::all_of(graph.V().begin(), graph.V().end(), [degree](auto const& v){ return v.out_degree() == degree; }))
 				return false;
-			std::vector<std::size_t> in_degrees(graph.V(), 0);
+			std::vector<std::size_t> in_degrees(graph.V().size(), 0);
 			for(auto const& vert : graph)
 				for(auto const& out_edge : vert.out_edges)
 					if(++in_degrees[out_edge->to] > degree)
 						return false;
 			return true; // we don't need to check that in_degrees[.] == degree, because of the first if-condition
 		} else if constexpr(is_undirected_v<graph_t>) {
-			if(graph.E() != graph.V() * degree / 2)
+			if(graph.E() != graph.V().size() * degree / 2)
 				return false;
-			return std::all_of(graph.v_begin(), graph.v_end(), [degree](auto const& v){ return v.out_degree() == degree; });
+			return std::all_of(graph.V().begin(), graph.V().end(), [degree](auto const& v){ return v.out_degree() == degree; });
 		}
 	}
 
@@ -41,7 +41,7 @@ namespace quiver
 	{
 		if(graph.empty())
 			return std::nullopt;
-		const std::size_t hypothesis = graph.vertex(0).out_degree();
+		const std::size_t hypothesis = graph.V()[0].out_degree();
 		if(is_regular(graph, hypothesis))
 			return hypothesis;
 		else

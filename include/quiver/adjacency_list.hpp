@@ -88,6 +88,50 @@ namespace quiver
 		}
 	};
 
+	template<typename graph_t>
+	class vertex_span_t
+	{
+	public:
+		using graph_type = graph_t;
+
+	private:
+		graph_type* graph;
+
+	public:
+		constexpr explicit vertex_span_t(graph_type& graph) noexcept
+		: graph(&graph)
+		{
+		}
+
+		constexpr auto size()     const { return graph->vertex_size(); }
+		constexpr auto capacity() const { return graph->vertex_capacity(); }
+
+		constexpr auto begin()    const { return graph->vertex_begin(); }
+		constexpr auto cbegin()   const { return graph->vertex_cbegin(); }
+		constexpr auto end()      const { return graph->vertex_end(); }
+		constexpr auto cend()     const { return graph->vertex_cend(); }
+
+		constexpr auto& operator[](vertex_index_t index) const { return graph->vertex_get(index); }
+		constexpr auto& get(vertex_index_t index)        const { return graph->vertex_get(index); }
+
+		template<typename... args_t>
+		constexpr auto emplace(args_t&&... args) const { return graph->vertex_emplace(std::forward<args_t>(args)...); }
+		constexpr auto erase(vertex_index_t index) const { return graph->vertex_erase(index); }
+	};
+
+	template<typename graph_t>
+	auto begin(vertex_span_t<graph_t>& graph);
+	template<typename graph_t>
+	auto begin(vertex_span_t<graph_t> const& graph);
+	template<typename graph_t>
+	auto cbegin(vertex_span_t<graph_t> const& graph);
+	template<typename graph_t>
+	auto end(vertex_span_t<graph_t>& graph);
+	template<typename graph_t>
+	auto end(vertex_span_t<graph_t> const& graph);
+	template<typename graph_t>
+	auto cend(vertex_span_t<graph_t> const& graph);
+
 	// no loops, no multiedges
 	template<
 		directivity_t dir = directed,
@@ -116,34 +160,52 @@ namespace quiver
 
 		static constexpr void normalize(vertex_index_t& from, vertex_index_t& to) noexcept;
 
-		bool remove_vertex_simple(vertex_index_t index);
+		bool vertex_erase_simple(vertex_index_t index);
 
 		template<typename... args_t>
 		bool add_edge_simple(vertex_index_t from, vertex_index_t to, args_t&&... args);
 		bool remove_edge_simple(vertex_index_t from, vertex_index_t to);
 		out_edge_t const* get_edge_simple(vertex_index_t from, vertex_index_t to) const noexcept;
 
+		using vertex_span_type = vertex_span_t<adjacency_list>;
+		friend class vertex_span_t<adjacency_list>;
+
+		using const_vertex_span_type = vertex_span_t<const adjacency_list>;
+		friend class vertex_span_t<const adjacency_list>;
+
+		auto vertex_size() const;
+		auto vertex_capacity() const;
+
+		auto vertex_begin();
+		auto vertex_begin() const;
+		auto vertex_cbegin() const;
+		auto vertex_end();
+		auto vertex_end() const;
+		auto vertex_cend() const;
+
+		vertex_t const& vertex_get(vertex_index_t index) const noexcept;
+		vertex_t& vertex_get(vertex_index_t index) noexcept;
+
+		// TODO: should return iter
+		template<typename... args_t>
+		vertex_index_t vertex_emplace(args_t&&... args);
+		bool vertex_erase(vertex_index_t index);
+
 	public:
 		adjacency_list() noexcept = default;
 		explicit adjacency_list(std::size_t vertices);
 
-		constexpr std::size_t V() const noexcept;
+		constexpr vertex_span_type V() noexcept;
+		constexpr const_vertex_span_type V() const noexcept;
+
 		constexpr std::size_t E() const noexcept;
 		constexpr std::size_t max_edges() const noexcept;
 		constexpr bool empty() const noexcept;
 		constexpr bool edgeless() const noexcept;
 
-		vertex_t const& vertex(vertex_index_t index) const noexcept;
-		vertex_t& vertex(vertex_index_t index) noexcept;
-
 		std::size_t in_degree(vertex_index_t index) const noexcept;
 		std::size_t out_degree(vertex_index_t index) const noexcept;
 		std::size_t degree(vertex_index_t index) const noexcept;
-
-		// TODO: should return iter
-		template<typename... args_t>
-		vertex_index_t add_vertex(args_t&&... args);
-		bool remove_vertex(vertex_index_t index);
 
 		void reserve(std::size_t vertices);
 		std::size_t capacity() const noexcept;
@@ -152,13 +214,6 @@ namespace quiver
 		template<typename... args_t>
 		bool add_edge(vertex_index_t from, vertex_index_t to, args_t&&... args);
 		bool remove_edge(vertex_index_t from, vertex_index_t to);
-
-		auto v_begin();
-		auto v_begin() const;
-		auto v_cbegin() const;
-		auto v_end();
-		auto v_end() const;
-		auto v_cend() const;
 
 		adjacency_list strip_edges() const&;
 		adjacency_list&& strip_edges() &&;
@@ -178,19 +233,6 @@ namespace quiver
 		static constexpr bool is_weighted() noexcept;
 		static constexpr bool is_simple() noexcept;
 	};
-
-	template<directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-	auto begin(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>& graph);
-	template<directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-	auto begin(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph);
-	template<directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-	auto cbegin(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph);
-	template<directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-	auto end(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>& graph);
-	template<directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-	auto end(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph);
-	template<directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-	auto cend(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph);
 
 	template<directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 	void swap(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& lhs, adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& rhs) noexcept;

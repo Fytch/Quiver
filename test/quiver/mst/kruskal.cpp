@@ -24,7 +24,7 @@ TEST_CASE("kruskal", "[quiver][mst]")
 		{
 			graph_t trivial(1);
 			auto mst = kruskal(trivial);
-			CHECK(mst.V() == 1);
+			CHECK(mst.V().size() == 1);
 			CHECK(mst.E() == 0);
 		}
 		SECTION("1 cc")
@@ -41,8 +41,8 @@ TEST_CASE("kruskal", "[quiver][mst]")
 			REQUIRE(ccs(graph) == 1);
 
 			auto mst = kruskal(graph);
-			REQUIRE(mst.V() == graph.V());
-			REQUIRE(mst.E() == graph.V() - 1); // because we have 1 CC
+			REQUIRE(mst.V().size() == graph.V().size());
+			REQUIRE(mst.E() == graph.V().size() - 1); // because we have 1 CC
 			CHECK(mst.get_edge(0, 1) != nullptr);
 			CHECK(mst.get_edge(0, 2) == nullptr);
 			CHECK(mst.get_edge(0, 3) != nullptr);
@@ -64,8 +64,8 @@ TEST_CASE("kruskal", "[quiver][mst]")
 			REQUIRE(ccs(graph) == 2);
 
 			auto mst = kruskal(graph);
-			REQUIRE(mst.V() == graph.V());
-			REQUIRE(mst.E() == graph.V() - 2); // because we have 2 CCs
+			REQUIRE(mst.V().size() == graph.V().size());
+			REQUIRE(mst.E() == graph.V().size() - 2); // because we have 2 CCs
 			CHECK(mst.get_edge(0, 1) != nullptr);
 			CHECK(mst.get_edge(0, 2) == nullptr);
 			CHECK(mst.get_edge(0, 3) != nullptr);
@@ -87,7 +87,7 @@ TEST_CASE("kruskal", "[quiver][mst]")
 		{
 			graph_t trivial(1);
 			auto mst = kruskal(trivial);
-			CHECK(mst.V() == 1);
+			CHECK(mst.V().size() == 1);
 			CHECK(mst.E() == 0);
 		}
 		SECTION("1 cc")
@@ -104,8 +104,8 @@ TEST_CASE("kruskal", "[quiver][mst]")
 			REQUIRE(ccs(graph) == 1);
 
 			auto mst = kruskal(graph);
-			REQUIRE(mst.V() == graph.V());
-			REQUIRE(mst.E() == graph.V() - 1); // because we have 1 CC
+			REQUIRE(mst.V().size() == graph.V().size());
+			REQUIRE(mst.E() == graph.V().size() - 1); // because we have 1 CC
 		}
 		SECTION("2 cc")
 		{
@@ -119,8 +119,8 @@ TEST_CASE("kruskal", "[quiver][mst]")
 			REQUIRE(ccs(graph) == 2);
 
 			auto mst = kruskal(graph);
-			REQUIRE(mst.V() == graph.V());
-			REQUIRE(mst.E() == graph.V() - 2); // because we have 2 CCs
+			REQUIRE(mst.V().size() == graph.V().size());
+			REQUIRE(mst.E() == graph.V().size() - 2); // because we have 2 CCs
 		}
 	}
 }

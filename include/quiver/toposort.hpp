@@ -20,12 +20,12 @@ namespace quiver
 	template<typename graph_t, typename output_iterator_t>
 	void toposort_kahn(graph_t const& graph, output_iterator_t iterator)
 	{
-		std::vector<std::size_t> in_deg(graph.V(), 0);
-		for(auto const& vert : graph)
+		std::vector<std::size_t> in_deg(graph.V().size(), 0);
+		for(auto const& vert : graph.V())
 			for(auto const& out_edge : vert.out_edges)
 				++in_deg[out_edge.to];
 		std::vector<vertex_index_t> starts;
-		for(vertex_index_t i = 0; i < graph.V(); ++i)
+		for(vertex_index_t i = 0; i < graph.V().size(); ++i)
 			if(in_deg[i] == 0)
 				starts.emplace_back(i);
 		std::size_t out_size = 0;
@@ -34,18 +34,18 @@ namespace quiver
 			*iterator++ = next;
 			++out_size;
 			starts.pop_back();
-			for(auto const& out_edge : graph.vertex(next).out_edges)
+			for(auto const& out_edge : graph.V()[next].out_edges)
 				if(--in_deg[out_edge.to] == 0)
 					starts.emplace_back(out_edge.to);
 		}
-		if(out_size != graph.V())
+		if(out_size != graph.V().size())
 			throw cyclic_graph{ "toposort_kahn: graph contains cycles" };
 	}
 	template<typename graph_t>
 	std::vector<vertex_index_t> toposort_kahn(graph_t const& graph)
 	{
 		std::vector<vertex_index_t> result;
-		result.resize(graph.V());
+		result.resize(graph.V().size());
 		toposort_kahn(graph, result.begin());
 		return result;
 	}

@@ -24,7 +24,7 @@ namespace quiver
 	complete(std::size_t n)
 	{
 		adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> result(n);
-		for(auto& vert : result)
+		for(auto& vert : result.V())
 			vert.out_edges.reserve(n - 1);
 		for(std::size_t i = 1; i < n; ++i)
 			for(std::size_t j = 0; j < i; ++j)
@@ -39,7 +39,7 @@ namespace quiver
 	template<typename graph_t>
 	bool is_complete(graph_t const& graph)
 	{
-		// return is_regular(graph, graph.V());
+		// return is_regular(graph, graph.V().size());
 		return graph.E() == graph.max_edges();
 	}
 }

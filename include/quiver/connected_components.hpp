@@ -21,9 +21,9 @@ namespace quiver
 	{
 		static_assert(is_undirected_v<graph_t>, "connected components exist in undirected graphs");
 
-		disjoint_set<> cc(graph.V());
+		disjoint_set<> cc(graph.V().size());
 		vertex_index_t vert_index = 0;
-		for(auto const& vert : graph) {
+		for(auto const& vert : graph.V()) {
 			for(auto const& out_edge : vert.out_edges)
 				if(vert_index < out_edge.to) // we only need half of the actual edges
 					cc.unite(vert_index, out_edge.to);
@@ -46,22 +46,22 @@ namespace quiver
 		auto ds = get_disjoint_set(graph);									// vertex [0..V] -> root [0..V]
 
 		std::unordered_map<std::size_t, std::size_t> compressed_cc_index;	// disjoint set roots -> cc index [0..|CC|]
-		for(vertex_index_t v = 0; v < graph.V(); ++v)
+		for(vertex_index_t v = 0; v < graph.V().size(); ++v)
 			compressed_cc_index.try_emplace(ds.find(v), compressed_cc_index.size());
 
-		std::vector<std::size_t> cc_relative(graph.V());					// vertex [0..V] -> index in cc [0..V-|CC|+1]
+		std::vector<std::size_t> cc_relative(graph.V().size());					// vertex [0..V] -> index in cc [0..V-|CC|+1]
 		{
 			std::vector<std::size_t> counters(ds.sets(), 0);
-			for(vertex_index_t v = 0; v < graph.V(); ++v)
+			for(vertex_index_t v = 0; v < graph.V().size(); ++v)
 				cc_relative[v] = counters[compressed_cc_index[ds.find(v)]]++;
 		}
 
 		std::vector<graph_t> result(ds.sets());
-		for(vertex_index_t v = 0; v < graph.V(); ++v) {
+		for(vertex_index_t v = 0; v < graph.V().size(); ++v) {
 			auto& cc = result[compressed_cc_index[ds.find(v)]];
 			cc.reserve(ds.cardinality(v));
-			auto index = cc.add_vertex(std::move(graph.vertex(v)));
-			for(auto& out_edge : cc.vertex(index).out_edges)
+			auto index = cc.V().emplace(std::move(graph.V()[v]));
+			for(auto& out_edge : cc.V()[index].out_edges)
 				out_edge.to = cc_relative[out_edge.to];
 		}
 		return result;

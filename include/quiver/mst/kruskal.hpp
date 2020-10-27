@@ -21,7 +21,7 @@ namespace quiver
 	{
 		static_assert(is_undirected_v<graph_t>, "kruskal operates on undirected graphs");
 
-		disjoint_set<> cc(graph.V());
+		disjoint_set<> cc(graph.V().size());
 		struct edge_t
 		{
 			vertex_index_t from, to;
@@ -37,7 +37,7 @@ namespace quiver
 			const std::size_t E = graph.E();
 			edges.reserve(E);
 			vertex_index_t vert_index = 0;
-			for(auto const& vert : graph) {
+			for(auto const& vert : graph.V()) {
 				for(auto const& out_edge : vert.out_edges)
 					if(vert_index < out_edge.to) // we only need half of the actual edges and no loops
 						edges.emplace_back(vert_index, out_edge.to, &out_edge);
@@ -60,9 +60,9 @@ namespace quiver
 		static_assert(is_undirected_v<graph_t>, "kruskal operates on undirected graphs");
 
 		graph_t mst = graph.strip_edges();
-		disjoint_set<> cc(graph.V());
+		disjoint_set<> cc(graph.V().size());
 		vertex_index_t vert_index = 0;
-		for(auto const& vert : graph) {
+		for(auto const& vert : graph.V()) {
 			for(auto const& out_edge : vert.out_edges)
 				if(vert_index < out_edge.to) // we only need half of the actual edges and no loops
 					if(cc.unite(vert_index, out_edge.to))

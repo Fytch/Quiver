@@ -58,7 +58,7 @@ namespace quiver
 			state.scc_stack.push(v);
 			state.on_scc_stack[v] = true;
 
-			for(auto const& out_edge : graph.vertex(v).out_edges) {
+			for(auto const& out_edge : graph.V()[v].out_edges) {
 				vertex_index_t w = out_edge.to;
 				if(!state.discovered[w]) {
 					tarjan_recurse(w, graph, state);
@@ -89,9 +89,9 @@ namespace quiver
 	std::vector<std::size_t> // vertex [0..V] -> scc index
 	tarjan_recursive(adjacency_list<directed, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph)
 	{
-		tarjan_detail::tarjan_state state(graph.V());
+		tarjan_detail::tarjan_state state(graph.V().size());
 
-		for(vertex_index_t start_node = 0; start_node < graph.V(); ++start_node) {
+		for(vertex_index_t start_node = 0; start_node < graph.V().size(); ++start_node) {
 			if(!state.discovered[start_node])
 				tarjan_detail::tarjan_recurse(start_node, graph, state);
 		}

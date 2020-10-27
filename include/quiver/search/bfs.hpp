@@ -25,9 +25,9 @@ namespace quiver
 		using vertex_t = copy_const<graph_t, typename graph_t::vertex_t>;
 		using out_edge_t = typename graph_t::out_edge_t;
 
-		assert(start < graph.V());
+		assert(start < graph.V().size());
 
-		std::vector<bool> enqueued(graph.V(), false);
+		std::vector<bool> enqueued(graph.V().size(), false);
 		enqueued[start] = true;
 		std::queue<vertex_index_t> neighbors;
 		neighbors.push(start);
@@ -35,7 +35,7 @@ namespace quiver
 		do {
 			vertex_index_t next = neighbors.front();
 			assert(enqueued[next]);
-			vertex_t& vertex = graph.vertex(next);
+			vertex_t& vertex = graph.V()[next];
 
 			// if(visitor(vertex))
 			if(visitor(next))

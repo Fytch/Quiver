@@ -26,8 +26,8 @@ namespace quiver
 	{
 		adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> result(n);
 		if(n > 1) {
-			auto iter = result.v_begin();
-			const auto last = std::prev(result.v_end());
+			auto iter = result.V().begin();
+			const auto last = std::prev(result.V().end());
 			iter->out_edges.reserve(1);
 			last->out_edges.reserve(1);
 			if(n > 2)
@@ -56,10 +56,10 @@ namespace quiver
 	{
 		if(graph.empty())
 			return true;
-		if(graph.E() != graph.V() - 1)
+		if(graph.E() != graph.V().size() - 1)
 			return false;
 		std::size_t leaves = 0;
-		for(auto iter = graph.v_begin(); iter != graph.v_end(); ++iter) {
+		for(auto iter = graph.V().begin(); iter != graph.V().end(); ++iter) {
 			switch(iter->out_degree()) {
 			case 1:
 				if(++leaves > 2)
