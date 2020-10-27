@@ -23,7 +23,7 @@ namespace quiver
 	template<typename graph_t>
 	std::enable_if_t<is_directed_v<std::decay_t<graph_t>>, std::decay_t<graph_t>> transpose(graph_t&& graph)
 	{
-		std::decay_t<graph_t> result = graph.vertices();
+		std::decay_t<graph_t> result = graph.strip_edges();
 		for(vertex_index_t v = 0; v < graph.V(); ++v)
 			for(auto&& out_edge : graph.vertex(v).out_edges)
 				result.add_edge(out_edge.to, v, out_edge.properties());

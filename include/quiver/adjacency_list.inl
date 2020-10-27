@@ -283,7 +283,7 @@ auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertices() const& -> adjacency_list
+auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::strip_edges() const& -> adjacency_list
 {
 	adjacency_list result;
 	result.reserve(V());
@@ -292,7 +292,7 @@ auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 	return result;
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertices() && -> adjacency_list&&
+auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::strip_edges() && -> adjacency_list&&
 {
 	for(auto& vertex : m_vertices) {
 		std::size_t diff_e = vertex.out_edges.size();

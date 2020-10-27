@@ -46,7 +46,7 @@ namespace quiver
 		}
 		std::sort(edges.begin(), edges.end(), [](edge_t const& lhs, edge_t const& rhs){ return lhs.ptr->weight < rhs.ptr->weight; });
 
-		graph_t mst = graph.vertices();
+		graph_t mst = graph.strip_edges();
 		for(edge_t const& e : edges)
 		{
 			if(cc.unite(e.from, e.to))
@@ -59,7 +59,7 @@ namespace quiver
 	{
 		static_assert(is_undirected_v<graph_t>, "kruskal operates on undirected graphs");
 
-		graph_t mst = graph.vertices();
+		graph_t mst = graph.strip_edges();
 		disjoint_set<> cc(graph.V());
 		vertex_index_t vert_index = 0;
 		for(auto const& vert : graph) {

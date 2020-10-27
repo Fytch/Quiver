@@ -19,7 +19,7 @@ namespace quiver
 	template<typename graph_t>
 	std::enable_if_t<is_directed_v<std::decay_t<graph_t>>, std::decay_t<graph_t>> complement(graph_t const& graph)
 	{
-		std::decay_t<graph_t> result = graph.vertices();
+		std::decay_t<graph_t> result = graph.strip_edges();
 		std::vector<bool> checklist(graph.V());
 		for(vertex_index_t v = 0; v < graph.V(); ++v) {
 			std::fill(checklist.begin(), checklist.end(), false);
@@ -39,7 +39,7 @@ namespace quiver
 	template<typename graph_t>
 	std::enable_if_t<is_undirected_v<std::decay_t<graph_t>>, std::decay_t<graph_t>> complement(graph_t const& graph)
 	{
-		std::decay_t<graph_t> result = graph.vertices();
+		std::decay_t<graph_t> result = graph.strip_edges();
 		std::vector<bool> checklist(graph.V());
 		for(vertex_index_t v = 0; v < graph.V(); ++v) {
 			std::fill(checklist.begin(), checklist.end(), false);
