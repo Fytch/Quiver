@@ -31,7 +31,7 @@ namespace quiver
 		base_t      & properties()       noexcept	{ return *this; }
 
 		template<typename... args_t>
-		out_edge(vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
+		constexpr out_edge(vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
 		: base_t(std::forward<args_t>(args)...), to(to)
 		{
 		}
@@ -46,12 +46,11 @@ namespace quiver
 		base_t      & properties()       noexcept	{ return *this; }
 
 		template<typename... args_t>
-		edge(vertex_index_t from, vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
+		constexpr edge(vertex_index_t from, vertex_index_t to, args_t&&... args) noexcept(std::is_nothrow_constructible_v<base_t, args_t...>)
 		: base_t(std::forward<args_t>(args)...), from(from), to(to)
 		{
 		}
-
-		edge(vertex_index_t from, out_edge<edge_properties_t> out) noexcept(std::is_nothrow_move_constructible_v<base_t>)
+		constexpr edge(vertex_index_t from, out_edge<edge_properties_t> out) noexcept(std::is_nothrow_move_constructible_v<base_t>)
 		: base_t(std::move(out.properties())), from(from), to(out.to)
 		{
 		}
@@ -68,22 +67,22 @@ namespace quiver
 
 		std::size_t out_degree() const noexcept		{ return out_edges.size(); }
 
-		bool has_edge_to(vertex_index_t index) const noexcept
+		constexpr bool has_edge_to(vertex_index_t index) const noexcept
 		{
 			return std::any_of(out_edges.begin(), out_edges.end(), [index](auto const& edge){ return edge.to == index; });
 		}
 
-		void sort_edges()
+		constexpr void sort_edges()
 		{
 			sort(out_edges, [](auto const& x, auto const& y){ return x.to < y.to; });
 		}
 
 		using base_t::base_t;
-		vertex(base_t const& properties)
+		constexpr vertex(base_t const& properties)
 		: base_t(properties)
 		{
 		}
-		vertex(base_t&& properties)
+		constexpr vertex(base_t&& properties)
 		: base_t(std::move(properties))
 		{
 		}
