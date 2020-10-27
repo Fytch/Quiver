@@ -6,7 +6,7 @@
  *	See the enclosed file LICENSE.txt for further information.
  */
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include <quiver.hpp>
 using namespace quiver;
 
