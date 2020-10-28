@@ -149,6 +149,8 @@ namespace quiver
 		template<typename adjacency_list_t, typename intermediate_t>
 		auto cend(vertex_span_t<adjacency_list_t, intermediate_t> const& graph);
 
+		// We need this base class because we need a standard layout type for offsetof.
+		// adjacency_list isn't standard layout because it has different access specifiers.
 		template<
 			typename edge_properties_t,
 			typename vertex_properties_t,
