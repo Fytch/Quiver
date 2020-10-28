@@ -100,13 +100,13 @@ namespace quiver
 			using adjacency_list_type = adjacency_list_t;
 
 		private:
-			constexpr adjacency_list_type* get_parent() noexcept
-			{
-				return static_cast<adjacency_list_type*>(reinterpret_cast<intermediate_t*>(reinterpret_cast<char*>(this) - offsetof(intermediate_t, V)));
-			}
 			constexpr adjacency_list_type const* get_parent() const noexcept
 			{
 				return static_cast<adjacency_list_type const*>(reinterpret_cast<intermediate_t const*>(reinterpret_cast<char const*>(this) - offsetof(intermediate_t, V)));
+			}
+			constexpr adjacency_list_type* get_parent() noexcept
+			{
+				return const_cast<adjacency_list_type*>(std::as_const(*this).get_parent());
 			}
 
 			constexpr vertex_span_t() noexcept = default;
