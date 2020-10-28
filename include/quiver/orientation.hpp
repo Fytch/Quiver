@@ -24,7 +24,7 @@ namespace quiver
 	{
 		const std::size_t V = graph.V.size();
 		adjacency_list<directed, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> result;
-		result.reserve(V);
+		result.V.reserve(V);
 		for(auto const& vertex : graph)
 			result.V.emplace(vertex.properties());
 		for(vertex_index_t v = 0; v < V; ++v) {

@@ -39,7 +39,7 @@ namespace quiver
 	template<typename graph_t>
 	std::optional<std::size_t> regular_degree(graph_t const& graph) noexcept
 	{
-		if(graph.empty())
+		if(graph.V.empty())
 			return std::nullopt;
 		const std::size_t hypothesis = graph.V[0].out_degree();
 		if(is_regular(graph, hypothesis))

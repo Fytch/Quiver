@@ -116,20 +116,22 @@ namespace quiver
 			constexpr vertex_span_t& operator=(vertex_span_t&&) noexcept = delete;
 
 		public:
-			constexpr auto size()     const { return get_parent()->vertex_size(); }
-			constexpr auto capacity() const { return get_parent()->vertex_capacity(); }
+			constexpr auto size()                            const noexcept { return get_parent()->vertex_size(); }
+			constexpr auto empty()                           const noexcept { return get_parent()->vertex_empty(); }
+			constexpr auto capacity()                        const noexcept { return get_parent()->vertex_capacity(); }
+			constexpr auto reserve(std::size_t vertices)                    { return get_parent()->vertex_reserve(vertices); }
 
-			constexpr auto begin()          { return get_parent()->vertex_begin(); }
-			constexpr auto begin()    const { return get_parent()->vertex_begin(); }
-			constexpr auto cbegin()   const { return get_parent()->vertex_cbegin(); }
-			constexpr auto end()            { return get_parent()->vertex_end(); }
-			constexpr auto end()      const { return get_parent()->vertex_end(); }
-			constexpr auto cend()     const { return get_parent()->vertex_cend(); }
+			constexpr auto begin()                                 noexcept { return get_parent()->vertex_begin(); }
+			constexpr auto begin()                           const noexcept { return get_parent()->vertex_begin(); }
+			constexpr auto cbegin()                          const noexcept { return get_parent()->vertex_cbegin(); }
+			constexpr auto end()                                   noexcept { return get_parent()->vertex_end(); }
+			constexpr auto end()                             const noexcept { return get_parent()->vertex_end(); }
+			constexpr auto cend()                            const noexcept { return get_parent()->vertex_cend(); }
 
-			constexpr auto& operator[](vertex_index_t index)       { return get_parent()->vertex_get(index); }
-			constexpr auto& operator[](vertex_index_t index) const { return get_parent()->vertex_get(index); }
-			constexpr auto& get(vertex_index_t index)              { return get_parent()->vertex_get(index); }
-			constexpr auto& get(vertex_index_t index)        const { return get_parent()->vertex_get(index); }
+			constexpr auto& operator[](vertex_index_t index)       noexcept { return get_parent()->vertex_get(index); }
+			constexpr auto& operator[](vertex_index_t index) const noexcept { return get_parent()->vertex_get(index); }
+			constexpr auto& get(vertex_index_t index)              noexcept { return get_parent()->vertex_get(index); }
+			constexpr auto& get(vertex_index_t index)        const noexcept { return get_parent()->vertex_get(index); }
 
 			template<typename... args_t>
 			constexpr auto emplace(args_t&&... args) { return get_parent()->vertex_emplace(std::forward<args_t>(args)...); }
@@ -175,14 +177,14 @@ namespace quiver
 			constexpr edge_span_t& operator=(edge_span_t&&) noexcept = delete;
 
 		public:
-			constexpr auto size()     const { return get_parent()->edge_size(); }
-			constexpr auto empty()    const { return get_parent()->edge_empty(); }
-			constexpr auto max_size() const { return get_parent()->edge_max_size(); }
+			constexpr auto size()     const noexcept { return get_parent()->edge_size(); }
+			constexpr auto empty()    const noexcept { return get_parent()->edge_empty(); }
+			constexpr auto max_size() const noexcept { return get_parent()->edge_max_size(); }
 
-			constexpr auto operator()(vertex_index_t from, vertex_index_t to)       { return get_parent()->edge_get(from, to); }
-			constexpr auto operator()(vertex_index_t from, vertex_index_t to) const { return get_parent()->edge_get(from, to); }
-			constexpr auto get(vertex_index_t from, vertex_index_t to)              { return get_parent()->edge_get(from, to); }
-			constexpr auto get(vertex_index_t from, vertex_index_t to)        const { return get_parent()->edge_get(from, to); }
+			constexpr auto operator()(vertex_index_t from, vertex_index_t to)       noexcept { return get_parent()->edge_get(from, to); }
+			constexpr auto operator()(vertex_index_t from, vertex_index_t to) const noexcept { return get_parent()->edge_get(from, to); }
+			constexpr auto get(vertex_index_t from, vertex_index_t to)              noexcept { return get_parent()->edge_get(from, to); }
+			constexpr auto get(vertex_index_t from, vertex_index_t to)        const noexcept { return get_parent()->edge_get(from, to); }
 
 			template<typename... args_t>
 			constexpr auto emplace(vertex_index_t from, vertex_index_t to, args_t&&... args) { return get_parent()->edge_emplace(from, to, std::forward<args_t>(args)...); }
@@ -280,18 +282,20 @@ namespace quiver
 		static constexpr void normalize(vertex_index_t& from, vertex_index_t& to) noexcept;
 
 		// accessible through .V
-		auto vertex_size() const;
-		auto vertex_capacity() const;
+		constexpr std::size_t vertex_size() const noexcept;
+		constexpr bool vertex_empty() const noexcept;
+		constexpr std::size_t vertex_capacity() const noexcept;
+		void vertex_reserve(std::size_t vertices);
 
-		auto vertex_begin();
-		auto vertex_begin() const;
-		auto vertex_cbegin() const;
-		auto vertex_end();
-		auto vertex_end() const;
-		auto vertex_cend() const;
+		constexpr auto vertex_begin() noexcept;
+		constexpr auto vertex_begin() const noexcept;
+		constexpr auto vertex_cbegin() const noexcept;
+		constexpr auto vertex_end() noexcept;
+		constexpr auto vertex_end() const noexcept;
+		constexpr auto vertex_cend() const noexcept;
 
-		vertex_t const& vertex_get(vertex_index_t index) const noexcept;
-		vertex_t& vertex_get(vertex_index_t index) noexcept;
+		constexpr vertex_t const& vertex_get(vertex_index_t index) const noexcept;
+		constexpr vertex_t& vertex_get(vertex_index_t index) noexcept;
 
 		template<typename... args_t>
 		vertex_index_t vertex_emplace(args_t&&... args); // TODO: should return iter
@@ -303,8 +307,8 @@ namespace quiver
 		constexpr bool edge_empty() const noexcept;
 		constexpr std::size_t edge_max_size() const noexcept;
 
-		out_edge_t const* edge_get(vertex_index_t from, vertex_index_t to) const noexcept;
-		out_edge_t const* edge_get_simple(vertex_index_t from, vertex_index_t to) const noexcept;
+		constexpr out_edge_t const* edge_get(vertex_index_t from, vertex_index_t to) const noexcept;
+		constexpr out_edge_t const* edge_get_simple(vertex_index_t from, vertex_index_t to) const noexcept;
 
 		template<typename... args_t>
 		bool edge_emplace(vertex_index_t from, vertex_index_t to, args_t&&... args); // TODO: should return std::pair<iter, bool>
@@ -327,15 +331,9 @@ namespace quiver
 		using base_t::E;
 		static_assert(std::is_same_v<decltype(E), edge_span_type>);
 
-		constexpr bool empty() const noexcept;
-		constexpr bool edgeless() const noexcept;
-
 		std::size_t in_degree(vertex_index_t index) const noexcept;
 		std::size_t out_degree(vertex_index_t index) const noexcept;
 		std::size_t degree(vertex_index_t index) const noexcept;
-
-		void reserve(std::size_t vertices);
-		std::size_t capacity() const noexcept;
 
 		adjacency_list strip_edges() const&;
 		adjacency_list&& strip_edges() &&;

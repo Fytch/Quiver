@@ -59,7 +59,7 @@ namespace quiver
 		std::vector<graph_t> result(ds.sets());
 		for(vertex_index_t v = 0; v < graph.V.size(); ++v) {
 			auto& cc = result[compressed_cc_index[ds.find(v)]];
-			cc.reserve(ds.cardinality(v));
+			cc.V.reserve(ds.cardinality(v));
 			auto index = cc.V.emplace(std::move(graph.V[v]));
 			for(auto& out_edge : cc.V[index].out_edges)
 				out_edge.to = cc_relative[out_edge.to];

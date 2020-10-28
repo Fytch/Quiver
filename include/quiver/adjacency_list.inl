@@ -24,54 +24,65 @@ constexpr void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_size() const
+constexpr std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_size() const noexcept
 {
 	return m_vertices.size();
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_capacity() const
+constexpr bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_empty() const noexcept
+{
+	return V.size() == 0;
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+constexpr std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_capacity() const noexcept
 {
 	return m_vertices.capacity();
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_begin()
+void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_reserve(std::size_t vertices)
+{
+	m_vertices.reserve(vertices);
+}
+
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_begin() noexcept
 {
 	return m_vertices.begin();
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_begin() const
+constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_begin() const noexcept
 {
 	return m_vertices.begin();
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_cbegin() const
+constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_cbegin() const noexcept
 {
 	return m_vertices.cbegin();
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_end()
+constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_end() noexcept
 {
 	return m_vertices.end();
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_end() const
+constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_end() const noexcept
 {
 	return m_vertices.end();
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_cend() const
+constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_cend() const noexcept
 {
 	return m_vertices.cend();
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_get(vertex_index_t index) const noexcept -> vertex_t const&
+constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_get(vertex_index_t index) const noexcept -> vertex_t const&
 {
 	assert(index < V.size());
 	return m_vertices[index];
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_get(vertex_index_t index) noexcept -> vertex_t&
+constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_get(vertex_index_t index) noexcept -> vertex_t&
 {
 	return const_cast<vertex_t&>(static_cast<adjacency_list const&>(*this).vertex_get(index));
 }
@@ -150,7 +161,7 @@ constexpr std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_prop
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_get(vertex_index_t from, vertex_index_t to) const noexcept -> out_edge_t const*
+constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_get(vertex_index_t from, vertex_index_t to) const noexcept -> out_edge_t const*
 {
 	assert(from < V.size());
 	assert(to < V.size());
@@ -160,7 +171,7 @@ auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 	return edge_get_simple(from, to);
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_get_simple(vertex_index_t from, vertex_index_t to) const noexcept -> out_edge_t const*
+constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_get_simple(vertex_index_t from, vertex_index_t to) const noexcept -> out_edge_t const*
 {
 	assert(from < V.size());
 	assert(to < V.size());
@@ -168,10 +179,8 @@ auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 	// if(from == to) return nullptr;
 	auto& edges = m_vertices[from].out_edges;
 	for(auto iter = edges.begin(); iter != edges.end(); ++iter)
-	{
 		if(iter->to == to)
 			return &*iter;
-	}
 	return nullptr;
 }
 
@@ -260,17 +269,6 @@ quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_con
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-constexpr bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::empty() const noexcept
-{
-	return V.size() == 0;
-}
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-constexpr bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edgeless() const noexcept
-{
-	return E.size() == 0;
-}
-
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::in_degree(vertex_index_t index) const noexcept
 {
 	if constexpr(directivity == directed) {
@@ -295,21 +293,10 @@ std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, 
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::reserve(std::size_t vertices)
-{
-	m_vertices.reserve(vertices);
-}
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::capacity() const noexcept
-{
-	return m_vertices.capacity();
-}
-
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::strip_edges() const& -> adjacency_list
 {
 	adjacency_list result;
-	result.reserve(V.size());
+	result.V.reserve(V.size());
 	for(auto const& vertex : m_vertices)
 		result.V.emplace(vertex.properties());
 	return result;
