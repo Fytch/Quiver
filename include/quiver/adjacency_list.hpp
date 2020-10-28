@@ -173,7 +173,7 @@ namespace quiver
 			// public:
 			vertex_span_type V;
 
-			adjacency_list_base()
+			adjacency_list_base() noexcept
 			{
 			}
 			explicit adjacency_list_base(std::size_t vertices)
