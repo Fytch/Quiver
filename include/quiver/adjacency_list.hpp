@@ -149,6 +149,46 @@ namespace quiver
 		template<typename adjacency_list_t, typename intermediate_t>
 		auto cend(vertex_span_t<adjacency_list_t, intermediate_t> const& graph);
 
+		template<typename adjacency_list_t, typename intermediate_t>
+		class edge_span_t final
+		{
+			// static_assert(std::is_standard_layout_v<intermediate_t>, "could not establish standard layout-ness");
+
+		public:
+			friend intermediate_t;
+			using adjacency_list_type = adjacency_list_t;
+
+		private:
+			constexpr adjacency_list_type const* get_parent() const noexcept
+			{
+				return static_cast<adjacency_list_type const*>(reinterpret_cast<intermediate_t const*>(reinterpret_cast<char const*>(this) - offsetof(intermediate_t, E)));
+			}
+			constexpr adjacency_list_type* get_parent() noexcept
+			{
+				return const_cast<adjacency_list_type*>(std::as_const(*this).get_parent());
+			}
+
+			constexpr edge_span_t() noexcept = default;
+			constexpr edge_span_t(edge_span_t const&) noexcept = delete;
+			constexpr edge_span_t(edge_span_t&&) noexcept = delete;
+			constexpr edge_span_t& operator=(edge_span_t const&) noexcept = delete;
+			constexpr edge_span_t& operator=(edge_span_t&&) noexcept = delete;
+
+		public:
+			constexpr auto size()     const { return get_parent()->edge_size(); }
+			constexpr auto empty()    const { return get_parent()->edge_empty(); }
+			constexpr auto max_size() const { return get_parent()->edge_max_size(); }
+
+			constexpr auto operator()(vertex_index_t from, vertex_index_t to)       { return get_parent()->edge_get(from, to); }
+			constexpr auto operator()(vertex_index_t from, vertex_index_t to) const { return get_parent()->edge_get(from, to); }
+			constexpr auto get(vertex_index_t from, vertex_index_t to)              { return get_parent()->edge_get(from, to); }
+			constexpr auto get(vertex_index_t from, vertex_index_t to)        const { return get_parent()->edge_get(from, to); }
+
+			template<typename... args_t>
+			constexpr auto emplace(vertex_index_t from, vertex_index_t to, args_t&&... args) { return get_parent()->edge_emplace(from, to, std::forward<args_t>(args)...); }
+			constexpr auto erase(vertex_index_t from, vertex_index_t to) { return get_parent()->edge_erase(from, to); }
+		};
+
 		// We need this base class because we need a standard layout type for offsetof.
 		// adjacency_list isn't standard layout because it has different access specifiers.
 		template<
@@ -164,6 +204,8 @@ namespace quiver
 			using adjacency_list = derived_t;
 			using vertex_span_type = vertex_span_t<adjacency_list, adjacency_list_base>;
 			friend vertex_span_type;
+			using edge_span_type = edge_span_t<adjacency_list, adjacency_list_base>;
+			friend edge_span_type;
 
 		protected:
 			// private:
@@ -171,7 +213,8 @@ namespace quiver
 			vertices_t m_vertices;
 
 			// public:
-			vertex_span_type V;
+			vertex_span_type V; // when renaming, the corresponding offsetof invocation must be change too
+			edge_span_type E; // when renaming, the corresponding offsetof invocation must be change too
 
 			adjacency_list_base() noexcept
 			{
@@ -228,19 +271,15 @@ namespace quiver
 
 	private:
 		using base_t::m_v;
-		static_assert(std::is_same_v<decltype(m_v), std::size_t>, "");
+		static_assert(std::is_same_v<decltype(m_v), std::size_t>);
 		using base_t::m_e;
-		static_assert(std::is_same_v<decltype(m_e), std::size_t>, "");
+		static_assert(std::is_same_v<decltype(m_e), std::size_t>);
 		using base_t::m_vertices;
-		static_assert(std::is_same_v<decltype(m_vertices), vertices_t>, "");
+		static_assert(std::is_same_v<decltype(m_vertices), vertices_t>);
 
 		static constexpr void normalize(vertex_index_t& from, vertex_index_t& to) noexcept;
 
-		template<typename... args_t>
-		bool add_edge_simple(vertex_index_t from, vertex_index_t to, args_t&&... args);
-		bool remove_edge_simple(vertex_index_t from, vertex_index_t to);
-		out_edge_t const* get_edge_simple(vertex_index_t from, vertex_index_t to) const noexcept;
-
+		// accessible through .V
 		auto vertex_size() const;
 		auto vertex_capacity() const;
 
@@ -254,11 +293,25 @@ namespace quiver
 		vertex_t const& vertex_get(vertex_index_t index) const noexcept;
 		vertex_t& vertex_get(vertex_index_t index) noexcept;
 
-		// TODO: should return iter
 		template<typename... args_t>
-		vertex_index_t vertex_emplace(args_t&&... args);
+		vertex_index_t vertex_emplace(args_t&&... args); // TODO: should return iter
 		bool vertex_erase(vertex_index_t index);
 		bool vertex_erase_simple(vertex_index_t index);
+
+		// accessible through .E
+		constexpr std::size_t edge_size() const noexcept;
+		constexpr bool edge_empty() const noexcept;
+		constexpr std::size_t edge_max_size() const noexcept;
+
+		out_edge_t const* edge_get(vertex_index_t from, vertex_index_t to) const noexcept;
+		out_edge_t const* edge_get_simple(vertex_index_t from, vertex_index_t to) const noexcept;
+
+		template<typename... args_t>
+		bool edge_emplace(vertex_index_t from, vertex_index_t to, args_t&&... args); // TODO: should return std::pair<iter, bool>
+		template<typename... args_t>
+		bool edge_emplace_simple(vertex_index_t from, vertex_index_t to, args_t&&... args);
+		bool edge_erase(vertex_index_t from, vertex_index_t to);
+		bool edge_erase_simple(vertex_index_t from, vertex_index_t to);
 
 	public:
 		adjacency_list() noexcept = default;
@@ -267,10 +320,13 @@ namespace quiver
 		using vertex_span_type = detail::vertex_span_t<adjacency_list, base_t>;
 		friend vertex_span_type;
 		using base_t::V;
-		static_assert(std::is_same_v<decltype(V), vertex_span_type>, "");
+		static_assert(std::is_same_v<decltype(V), vertex_span_type>);
 
-		constexpr std::size_t E() const noexcept;
-		constexpr std::size_t max_edges() const noexcept;
+		using edge_span_type = detail::edge_span_t<adjacency_list, base_t>;
+		friend edge_span_type;
+		using base_t::E;
+		static_assert(std::is_same_v<decltype(E), edge_span_type>);
+
 		constexpr bool empty() const noexcept;
 		constexpr bool edgeless() const noexcept;
 
@@ -281,15 +337,8 @@ namespace quiver
 		void reserve(std::size_t vertices);
 		std::size_t capacity() const noexcept;
 
-		// TODO: should return std::pair<iter, bool>
-		template<typename... args_t>
-		bool add_edge(vertex_index_t from, vertex_index_t to, args_t&&... args);
-		bool remove_edge(vertex_index_t from, vertex_index_t to);
-
 		adjacency_list strip_edges() const&;
 		adjacency_list&& strip_edges() &&;
-
-		out_edge_t const* get_edge(vertex_index_t from, vertex_index_t to) const noexcept;
 
 		template<typename invokable_t>
 		void transform_outs(invokable_t invokable);

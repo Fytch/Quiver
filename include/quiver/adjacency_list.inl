@@ -24,54 +24,6 @@ constexpr void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-template<typename... args_t>
-bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::add_edge_simple(vertex_index_t from, vertex_index_t to, args_t&&... args)
-{
-	assert(from < V.size());
-	assert(to < V.size());
-	assert(get_edge_simple(from, to) == nullptr);
-	assert(from != to); // no loops
-
-	m_vertices[from].out_edges.emplace_back(to, std::forward<args_t>(args)...);
-	++m_e;
-	return true;
-}
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::remove_edge_simple(vertex_index_t from, vertex_index_t to)
-{
-	assert(from < V.size());
-	assert(to < V.size());
-
-	// if(from == to) return false;
-	auto& edges = m_vertices[from].out_edges;
-	for(auto iter = edges.begin(); iter != edges.end(); ++iter)
-	{
-		if(iter->to == to)
-		{
-			edges.erase(iter);
-			--m_e;
-			return true;
-		}
-	}
-	return false;
-}
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::get_edge_simple(vertex_index_t from, vertex_index_t to) const noexcept -> out_edge_t const*
-{
-	assert(from < V.size());
-	assert(to < V.size());
-
-	// if(from == to) return nullptr;
-	auto& edges = m_vertices[from].out_edges;
-	for(auto iter = edges.begin(); iter != edges.end(); ++iter)
-	{
-		if(iter->to == to)
-			return &*iter;
-	}
-	return nullptr;
-}
-
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::vertex_size() const
 {
 	return m_vertices.size();
@@ -176,13 +128,7 @@ bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::adjacency_list(std::size_t vertices)
-: base_t(vertices)
-{
-}
-
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-constexpr std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::E() const noexcept
+constexpr std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_size() const noexcept
 {
 	if constexpr(directivity == directed)
 		return m_e;
@@ -190,13 +136,129 @@ constexpr std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_prop
 		return m_e / 2;
 }
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-constexpr std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::max_edges() const noexcept
+constexpr bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_empty() const noexcept
+{
+	return E.size() == 0;
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+constexpr std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_max_size() const noexcept
 {
 	if constexpr(directivity == directed)
 		return V.size() * (V.size() - 1);
 	else if constexpr(directivity == undirected)
 		return V.size() * (V.size() - 1) / 2;
 }
+
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_get(vertex_index_t from, vertex_index_t to) const noexcept -> out_edge_t const*
+{
+	assert(from < V.size());
+	assert(to < V.size());
+
+	if constexpr(directivity == undirected)
+		normalize(from, to); // so that edge_get(1,0) == edge_get(0,1)
+	return edge_get_simple(from, to);
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_get_simple(vertex_index_t from, vertex_index_t to) const noexcept -> out_edge_t const*
+{
+	assert(from < V.size());
+	assert(to < V.size());
+
+	// if(from == to) return nullptr;
+	auto& edges = m_vertices[from].out_edges;
+	for(auto iter = edges.begin(); iter != edges.end(); ++iter)
+	{
+		if(iter->to == to)
+			return &*iter;
+	}
+	return nullptr;
+}
+
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+template<typename... args_t>
+bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_emplace(vertex_index_t from, vertex_index_t to, args_t&&... args)
+{
+	assert(from < V.size());
+	assert(to < V.size());
+	// assert(the edge (from, to) doesn't already exist);
+
+	if constexpr(directivity == directed) {
+		edge_emplace_simple(from, to, std::forward<args_t>(args)...);
+	} else if constexpr(directivity == undirected) {
+		edge_emplace_simple(to, from, std::as_const(args)...);
+		edge_emplace_simple(from, to, std::forward<args_t>(args)...);
+		/*
+		if(from != to) {
+			edge_emplace_simple(to, from, std::as_const(args)...);
+			edge_emplace_simple(from, to, std::forward<args_t>(args)...);
+			// TODO: strong exception safety
+		} else {
+			edge_emplace_simple(from, to, std::forward<args_t>(args)...);
+		}
+		*/
+	}
+	return true;
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+template<typename... args_t>
+bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_emplace_simple(vertex_index_t from, vertex_index_t to, args_t&&... args)
+{
+	assert(from < V.size());
+	assert(to < V.size());
+	assert(edge_get_simple(from, to) == nullptr);
+	assert(from != to); // no loops
+
+	m_vertices[from].out_edges.emplace_back(to, std::forward<args_t>(args)...);
+	++m_e;
+	return true;
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_erase(vertex_index_t from, vertex_index_t to)
+{
+	assert(from < V.size());
+	assert(to < V.size());
+
+	// if(from == to) return false;
+	if constexpr(directivity == directed) {
+		return edge_erase_simple(from, to);
+	} else if constexpr(directivity == undirected) {
+		if(from == to)
+			return edge_erase_simple(from, to);
+
+		assert((edge_get_simple(from, to) == nullptr) == (edge_get_simple(to, from) == nullptr));
+		const bool removed = edge_erase_simple(from, to);
+		if(removed)
+			edge_erase_simple(from, to); // TODO: strong exception safety
+		return removed;
+	}
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edge_erase_simple(vertex_index_t from, vertex_index_t to)
+{
+	assert(from < V.size());
+	assert(to < V.size());
+
+	// if(from == to) return false;
+	auto& edges = m_vertices[from].out_edges;
+	for(auto iter = edges.begin(); iter != edges.end(); ++iter)
+	{
+		if(iter->to == to)
+		{
+			edges.erase(iter);
+			--m_e;
+			return true;
+		}
+	}
+	return false;
+}
+
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::adjacency_list(std::size_t vertices)
+: base_t(vertices)
+{
+}
+
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 constexpr bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::empty() const noexcept
 {
@@ -205,7 +267,7 @@ constexpr bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 constexpr bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::edgeless() const noexcept
 {
-	return E() == 0;
+	return E.size() == 0;
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
@@ -244,52 +306,6 @@ std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, 
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-template<typename... args_t>
-bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::add_edge(vertex_index_t from, vertex_index_t to, args_t&&... args)
-{
-	assert(from < V.size());
-	assert(to < V.size());
-	// assert(the edge (from, to) doesn't already exist);
-
-	if constexpr(directivity == directed) {
-		add_edge_simple(from, to, std::forward<args_t>(args)...);
-	} else if constexpr(directivity == undirected) {
-		add_edge_simple(to, from, std::as_const(args)...);
-		add_edge_simple(from, to, std::forward<args_t>(args)...);
-		/*
-		if(from != to) {
-			add_edge_simple(to, from, std::as_const(args)...);
-			add_edge_simple(from, to, std::forward<args_t>(args)...);
-			// TODO: strong exception safety
-		} else {
-			add_edge_simple(from, to, std::forward<args_t>(args)...);
-		}
-		*/
-	}
-	return true;
-}
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::remove_edge(vertex_index_t from, vertex_index_t to)
-{
-	assert(from < V.size());
-	assert(to < V.size());
-
-	// if(from == to) return false;
-	if constexpr(directivity == directed) {
-		return remove_edge_simple(from, to);
-	} else if constexpr(directivity == undirected) {
-		if(from == to)
-			return remove_edge_simple(from, to);
-
-		assert((get_edge_simple(from, to) == nullptr) == (get_edge_simple(to, from) == nullptr));
-		const bool removed = remove_edge_simple(from, to);
-		if(removed)
-			remove_edge_simple(from, to); // TODO: strong exception safety
-		return removed;
-	}
-}
-
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::strip_edges() const& -> adjacency_list
 {
 	adjacency_list result;
@@ -308,17 +324,6 @@ auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 	}
 	assert(m_e == 0);
 	return std::move(*this);
-}
-
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::get_edge(vertex_index_t from, vertex_index_t to) const noexcept -> out_edge_t const*
-{
-	assert(from < V.size());
-	assert(to < V.size());
-
-	if constexpr(directivity == undirected)
-		normalize(from, to); // so that get_edge(1,0) == get_edge(0,1)
-	return get_edge_simple(from, to);
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
@@ -381,7 +386,7 @@ bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 			const bool is_vu = (out_edge.to == u);
 			has_uv_or_vu |= is_vu;
 			if(!is_vu && !u_connectivity[out_edge.to])
-				add_edge_simple(u, out_edge.to, std::move(out_edge.properties()));
+				edge_emplace_simple(u, out_edge.to, std::move(out_edge.properties()));
 		}
 	}
 	vertex_erase_simple(v);
@@ -428,7 +433,7 @@ quiver::vertex_index_t quiver::adjacency_list<dir, edge_properties_t, vertex_pro
 		if(i != v && i != new_v)
 			for(auto& out_edge : V[i].out_edges)
 				if(out_edge.to == v) {
-					add_edge_simple(i, new_v, out_edge.properties());
+					edge_emplace_simple(i, new_v, out_edge.properties());
 					break;
 				}
 	return new_v;

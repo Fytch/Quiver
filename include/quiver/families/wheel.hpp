@@ -32,11 +32,11 @@ namespace quiver
 		for(auto iter = std::next(result.V.begin()); iter != result.V.end(); ++iter)
 			iter->out_edges.reserve(3);
 		// so we can spare us the modulo:
-		result.add_edge(0, n - 1);
-		result.add_edge(1, n - 1);
+		result.E.emplace(0, n - 1);
+		result.E.emplace(1, n - 1);
 		for(vertex_index_t i = 1; i < n - 1; ++i) {
-			result.add_edge(0, i);
-			result.add_edge(i, i + 1);
+			result.E.emplace(0, i);
+			result.E.emplace(i, i + 1);
 		}
 		return result;
 	}

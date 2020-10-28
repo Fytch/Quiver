@@ -28,11 +28,11 @@ namespace quiver
 			vertex_index_t o = 0;
 			for(; o < v; ++o)
 				if(checklist[o] == false)
-					result.add_edge(v, o);
+					result.E.emplace(v, o);
 			++o; // skip o = v
 			for(; o < graph.V.size(); ++o)
 				if(checklist[o] == false)
-					result.add_edge(v, o);
+					result.E.emplace(v, o);
 		}
 		return result;
 	}
@@ -48,7 +48,7 @@ namespace quiver
 			vertex_index_t o = 0;
 			for(; o < v; ++o)
 				if(checklist[o] == false)
-					result.add_edge(v, o);
+					result.E.emplace(v, o);
 		}
 		return result;
 	}

@@ -28,7 +28,7 @@ TEST_CASE("toposort", "[quiver]")
 	SECTION("0->1  2")
 	{
 		adjacency_list<directed> graph(3);
-		graph.add_edge(0, 1);
+		graph.E.emplace(0, 1);
 
 		const auto sorting = toposort(graph);
 		REQUIRE(sorting.size() == graph.V.size());
@@ -43,8 +43,8 @@ TEST_CASE("toposort", "[quiver]")
 	SECTION("0->1->2")
 	{
 		adjacency_list<directed> graph(3);
-		graph.add_edge(0, 1);
-		graph.add_edge(1, 2);
+		graph.E.emplace(0, 1);
+		graph.E.emplace(1, 2);
 
 		const auto sorting = toposort(graph);
 		REQUIRE(sorting.size() == graph.V.size());
@@ -60,9 +60,9 @@ TEST_CASE("toposort", "[quiver]")
 	SECTION("0->1->2, 0->2")
 	{
 		adjacency_list<directed> graph(3);
-		graph.add_edge(0, 1);
-		graph.add_edge(0, 2);
-		graph.add_edge(1, 2);
+		graph.E.emplace(0, 1);
+		graph.E.emplace(0, 2);
+		graph.E.emplace(1, 2);
 
 		const auto sorting = toposort(graph);
 		REQUIRE(sorting.size() == graph.V.size());
@@ -78,9 +78,9 @@ TEST_CASE("toposort", "[quiver]")
 	SECTION("cyclic")
 	{
 		adjacency_list<directed> graph(3);
-		graph.add_edge(0, 1);
-		graph.add_edge(1, 2);
-		graph.add_edge(2, 0);
+		graph.E.emplace(0, 1);
+		graph.E.emplace(1, 2);
+		graph.E.emplace(2, 0);
 
 		CHECK_THROWS_AS(toposort(graph), cyclic_graph);
 	}

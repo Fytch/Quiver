@@ -14,6 +14,6 @@ TEST_CASE("wheel", "[quiver][families]")
 	for(std::size_t n = 4; n < 20; ++n) {
 		const auto K = wheel(n);
 		CHECK(K.V.size() == n);
-		CHECK(K.E() == 2 * (n - 1));
+		CHECK(K.E.size() == 2 * (n - 1));
 	}
 }

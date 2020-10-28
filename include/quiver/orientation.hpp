@@ -31,9 +31,9 @@ namespace quiver
 			for(auto const& out_edge : graph.V[v].out_edges) {
 				if(out_edge.to < v) {
 					if(orientation(out_edge.to, v))
-						result.add_edge(out_edge.to, v, out_edge.properties());
+						result.E.emplace(out_edge.to, v, out_edge.properties());
 					else
-						result.add_edge(v, out_edge.to, out_edge.properties());
+						result.E.emplace(v, out_edge.to, out_edge.properties());
 				}
 			}
 		}
@@ -52,7 +52,7 @@ namespace quiver
 		for(vertex_index_t v = 0; v < V; ++v) {
 			for(auto const& out_edge : graph.V[v].out_edges) {
 				if(!exists[V * out_edge.to + v]) {
-					result.add_edge(out_edge.to, v, out_edge.properties());
+					result.E.emplace(out_edge.to, v, out_edge.properties());
 					exists[V * out_edge.to + v] = true;
 					exists[V * v + out_edge.to] = true;
 				}

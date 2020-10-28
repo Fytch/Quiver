@@ -16,13 +16,13 @@ TEST_CASE("bfs", "[quiver][search]")
 	{
 		using graph_t = adjacency_list<directed, void, void>;
 		graph_t graph(5);
-		graph.add_edge(0, 1);
-		graph.add_edge(1, 3);
-		graph.add_edge(1, 2);
-		graph.add_edge(2, 0);
-		graph.add_edge(2, 4);
-		graph.add_edge(3, 4);
-		graph.add_edge(4, 1);
+		graph.E.emplace(0, 1);
+		graph.E.emplace(1, 3);
+		graph.E.emplace(1, 2);
+		graph.E.emplace(2, 0);
+		graph.E.emplace(2, 4);
+		graph.E.emplace(3, 4);
+		graph.E.emplace(4, 1);
 
 		std::vector<vertex_index_t> visited;
 		auto visitor = [&visited](auto const& vertex){ visited.push_back(vertex); return false; };

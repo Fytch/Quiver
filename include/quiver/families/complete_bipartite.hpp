@@ -32,7 +32,7 @@ namespace quiver
 		}
 		for(std::size_t i = 0; i < n; ++i)
 			for(std::size_t j = 0; j < m; ++j)
-				result.add_edge(i, j + n);
+				result.E.emplace(i, j + n);
 		return result;
 	}
 	inline auto complete_bipartite(std::size_t m, std::size_t n)

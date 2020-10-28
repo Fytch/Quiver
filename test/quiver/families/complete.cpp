@@ -14,6 +14,6 @@ TEST_CASE("complete", "[quiver][families]")
 	for(std::size_t n = 0; n < 20; ++n) {
 		const auto K = complete(n);
 		CHECK(K.V.size() == n);
-		CHECK(K.E() == n * (n - 1) / 2);
+		CHECK(K.E.size() == n * (n - 1) / 2);
 	}
 }

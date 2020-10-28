@@ -28,7 +28,7 @@ namespace quiver
 			vert.out_edges.reserve(n - 1);
 		for(std::size_t i = 1; i < n; ++i)
 			for(std::size_t j = 0; j < i; ++j)
-				result.add_edge(i, j);
+				result.E.emplace(i, j);
 		return result;
 	}
 	inline auto complete(std::size_t n)
@@ -40,7 +40,7 @@ namespace quiver
 	bool is_complete(graph_t const& graph)
 	{
 		// return is_regular(graph, graph.V.size());
-		return graph.E() == graph.max_edges();
+		return graph.E.size() == graph.max_edges();
 	}
 }
 

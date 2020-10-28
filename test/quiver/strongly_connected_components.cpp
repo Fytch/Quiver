@@ -26,22 +26,22 @@ TEST_CASE("strongly_connected_components", "[quiver][fundamentals]")
 	// 0  2  4  6
 	// 1  3  5  7
 
-	graph.add_edge(0, 1);
-	graph.add_edge(1, 2);
-	graph.add_edge(2, 0);
+	graph.E.emplace(0, 1);
+	graph.E.emplace(1, 2);
+	graph.E.emplace(2, 0);
 
-	graph.add_edge(3, 1);
-	graph.add_edge(3, 2);
-	graph.add_edge(3, 5);
-	graph.add_edge(5, 3);
-	graph.add_edge(5, 4);
+	graph.E.emplace(3, 1);
+	graph.E.emplace(3, 2);
+	graph.E.emplace(3, 5);
+	graph.E.emplace(5, 3);
+	graph.E.emplace(5, 4);
 
-	graph.add_edge(4, 2);
-	graph.add_edge(4, 6);
-	graph.add_edge(6, 4);
+	graph.E.emplace(4, 2);
+	graph.E.emplace(4, 6);
+	graph.E.emplace(6, 4);
 
-	graph.add_edge(7, 6);
-	graph.add_edge(7, 5);
+	graph.E.emplace(7, 6);
+	graph.E.emplace(7, 5);
 
 	const auto sccs = tarjan_recursive(graph);
 

@@ -34,7 +34,7 @@ namespace quiver
 		};
 		std::vector<edge_t> edges;
 		{
-			const std::size_t E = graph.E();
+			const std::size_t E = graph.E.size();
 			edges.reserve(E);
 			vertex_index_t vert_index = 0;
 			for(auto const& vert : graph.V) {
@@ -50,7 +50,7 @@ namespace quiver
 		for(edge_t const& e : edges)
 		{
 			if(cc.unite(e.from, e.to))
-				mst.add_edge(e.from, e.to, e.ptr->properties());
+				mst.E.emplace(e.from, e.to, e.ptr->properties());
 		}
 		return mst;
 	}
@@ -66,7 +66,7 @@ namespace quiver
 			for(auto const& out_edge : vert.out_edges)
 				if(vert_index < out_edge.to) // we only need half of the actual edges and no loops
 					if(cc.unite(vert_index, out_edge.to))
-						mst.add_edge(vert_index, out_edge.to, out_edge.properties());
+						mst.E.emplace(vert_index, out_edge.to, out_edge.properties());
 			++vert_index;
 		}
 		return mst;

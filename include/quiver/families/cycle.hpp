@@ -31,8 +31,8 @@ namespace quiver
 		for(auto& vert : result.V)
 			vert.out_edges.reserve(2);
 		for(vertex_index_t i = 0; i < n - 1; ++i)
-			result.add_edge(i, i + 1);
-		result.add_edge(0, n - 1); // so we can spare us the modulo
+			result.E.emplace(i, i + 1);
+		result.E.emplace(0, n - 1); // so we can spare us the modulo
 		return result;
 	}
 	inline auto cycle(std::size_t n)

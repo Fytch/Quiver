@@ -36,7 +36,7 @@ namespace quiver
 		}
 		if(n > 1)
 			for(vertex_index_t i = 0; i < n - 1; ++i)
-				result.add_edge(i, i + 1);
+				result.E.emplace(i, i + 1);
 		return result;
 	}
 	inline auto linear(std::size_t n)
@@ -56,7 +56,7 @@ namespace quiver
 	{
 		if(graph.empty())
 			return true;
-		if(graph.E() != graph.V.size() - 1)
+		if(graph.E.size() != graph.V.size() - 1)
 			return false;
 		std::size_t leaves = 0;
 		for(auto iter = graph.V.begin(); iter != graph.V.end(); ++iter) {
