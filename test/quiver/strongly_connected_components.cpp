@@ -16,7 +16,7 @@ TEST_CASE("strongly_connected_components", "[quiver][fundamentals]")
 	graph_t graph;
 	const std::size_t N = 8;
 	for(std::size_t i = 0; i < N; ++i)
-		graph.V().emplace(i);
+		graph.V.emplace(i);
 
 
 	// graph from example on Wikipedia

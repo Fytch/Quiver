@@ -27,7 +27,7 @@ TEST_CASE("dfs", "[quiver][search]")
 		std::vector<vertex_index_t> visited;
 		auto visitor = [&visited](auto const& vertex){ visited.push_back(vertex); return false; };
 		CHECK(dfs(graph, 1, visitor) == false);
-		REQUIRE(visited.size() == graph.V().size());
+		REQUIRE(visited.size() == graph.V.size());
 		CHECK(visited[0] == 1);
 		CHECK(visited[1] == 3);
 		CHECK(visited[2] == 4);

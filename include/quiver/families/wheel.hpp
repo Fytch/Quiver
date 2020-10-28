@@ -28,8 +28,8 @@ namespace quiver
 	{
 		assert(n >= 4);
 		adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> result(n);
-		result.V()[0].out_edges.reserve(n - 1);
-		for(auto iter = std::next(result.V().begin()); iter != result.V().end(); ++iter)
+		result.V[0].out_edges.reserve(n - 1);
+		for(auto iter = std::next(result.V.begin()); iter != result.V.end(); ++iter)
 			iter->out_edges.reserve(3);
 		// so we can spare us the modulo:
 		result.add_edge(0, n - 1);

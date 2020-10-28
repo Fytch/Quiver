@@ -26,9 +26,9 @@ namespace quiver
 		{
 			std::size_t i = 0;
 			while(i < n)
-				result.V()[i++].out_edges.reserve(m);
+				result.V[i++].out_edges.reserve(m);
 			while(i < m + n)
-				result.V()[i++].out_edges.reserve(n);
+				result.V[i++].out_edges.reserve(n);
 		}
 		for(std::size_t i = 0; i < n; ++i)
 			for(std::size_t j = 0; j < m; ++j)

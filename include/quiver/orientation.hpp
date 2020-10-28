@@ -22,13 +22,13 @@ namespace quiver
 	adjacency_list<directed, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>
 	orient(adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph, orientation_t orientation)
 	{
-		const std::size_t V = graph.V().size();
+		const std::size_t V = graph.V.size();
 		adjacency_list<directed, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> result;
 		result.reserve(V);
 		for(auto const& vertex : graph)
-			result.V().emplace(vertex.properties());
+			result.V.emplace(vertex.properties());
 		for(vertex_index_t v = 0; v < V; ++v) {
-			for(auto const& out_edge : graph.V()[v].out_edges) {
+			for(auto const& out_edge : graph.V[v].out_edges) {
 				if(out_edge.to < v) {
 					if(orientation(out_edge.to, v))
 						result.add_edge(out_edge.to, v, out_edge.properties());
@@ -43,14 +43,14 @@ namespace quiver
 	adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>
 	disorient(adjacency_list<directed, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph)
 	{
-		const std::size_t V = graph.V().size();
+		const std::size_t V = graph.V.size();
 		adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> result;
 		result.reserve(V);
 		std::vector<bool> exists(V * V, false); // TODO: only needs to be a strict triangular matrix; saves more than half the memory
 		for(auto const& vertex : graph)
-			result.V().emplace(vertex.properties());
+			result.V.emplace(vertex.properties());
 		for(vertex_index_t v = 0; v < V; ++v) {
-			for(auto const& out_edge : graph.V()[v].out_edges) {
+			for(auto const& out_edge : graph.V[v].out_edges) {
 				if(!exists[V * out_edge.to + v]) {
 					result.add_edge(out_edge.to, v, out_edge.properties());
 					exists[V * out_edge.to + v] = true;

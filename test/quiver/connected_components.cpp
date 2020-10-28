@@ -15,7 +15,7 @@ TEST_CASE("connected_components", "[quiver][fundamentals]")
 	graph_t graph;
 	const std::size_t N = 10;
 	for(std::size_t i = 0; i < N; ++i)
-		graph.V().emplace(i);
+		graph.V.emplace(i);
 
 	graph.add_edge(0, 2);
 	graph.add_edge(0, 9);
@@ -32,28 +32,28 @@ TEST_CASE("connected_components", "[quiver][fundamentals]")
 	auto list = split_ccs(graph);
 	REQUIRE(list.size() == 4);
 
-	REQUIRE(list[0].V().size() == 4);
+	REQUIRE(list[0].V.size() == 4);
 	CHECK(list[0].get_edge(0, 1));
 	CHECK(list[0].get_edge(0, 3));
 	CHECK(list[0].get_edge(1, 2));
-	CHECK(list[0].V()[0].capacity == 0);
-	CHECK(list[0].V()[1].capacity == 2);
-	CHECK(list[0].V()[2].capacity == 5);
-	CHECK(list[0].V()[3].capacity == 9);
+	CHECK(list[0].V[0].capacity == 0);
+	CHECK(list[0].V[1].capacity == 2);
+	CHECK(list[0].V[2].capacity == 5);
+	CHECK(list[0].V[3].capacity == 9);
 
-	REQUIRE(list[1].V().size() == 3);
+	REQUIRE(list[1].V.size() == 3);
 	CHECK(list[1].get_edge(0, 1));
 	CHECK(list[1].get_edge(0, 2));
 	CHECK(list[1].get_edge(1, 2));
-	CHECK(list[1].V()[0].capacity == 1);
-	CHECK(list[1].V()[1].capacity == 3);
-	CHECK(list[1].V()[2].capacity == 6);
+	CHECK(list[1].V[0].capacity == 1);
+	CHECK(list[1].V[1].capacity == 3);
+	CHECK(list[1].V[2].capacity == 6);
 
-	REQUIRE(list[2].V().size() == 1);
-	CHECK(list[2].V()[0].capacity == 4);
+	REQUIRE(list[2].V.size() == 1);
+	CHECK(list[2].V[0].capacity == 4);
 
-	REQUIRE(list[3].V().size() == 2);
+	REQUIRE(list[3].V.size() == 2);
 	CHECK(list[3].get_edge(0, 1));
-	CHECK(list[3].V()[0].capacity == 7);
-	CHECK(list[3].V()[1].capacity == 8);
+	CHECK(list[3].V[0].capacity == 7);
+	CHECK(list[3].V[1].capacity == 8);
 }

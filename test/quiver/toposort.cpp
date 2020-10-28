@@ -17,11 +17,11 @@ TEST_CASE("toposort", "[quiver]")
 		adjacency_list<directed> graph(3);
 
 		const auto sorting = toposort(graph);
-		REQUIRE(sorting.size() == graph.V().size());
+		REQUIRE(sorting.size() == graph.V.size());
 		{
 			auto sorted_sorting = sorting;
 			std::sort(sorted_sorting.begin(), sorted_sorting.end());
-			for(std::size_t i = 0; i < graph.V().size(); ++i)
+			for(std::size_t i = 0; i < graph.V.size(); ++i)
 				CHECK(sorted_sorting[i] == i);
 		}
 	}
@@ -31,11 +31,11 @@ TEST_CASE("toposort", "[quiver]")
 		graph.add_edge(0, 1);
 
 		const auto sorting = toposort(graph);
-		REQUIRE(sorting.size() == graph.V().size());
+		REQUIRE(sorting.size() == graph.V.size());
 		{
 			auto sorted_sorting = sorting;
 			std::sort(sorted_sorting.begin(), sorted_sorting.end());
-			for(std::size_t i = 0; i < graph.V().size(); ++i)
+			for(std::size_t i = 0; i < graph.V.size(); ++i)
 				CHECK(sorted_sorting[i] == i);
 		}
 		CHECK(std::find(sorting.begin(), sorting.end(), 0) < std::find(sorting.begin(), sorting.end(), 1));
@@ -47,11 +47,11 @@ TEST_CASE("toposort", "[quiver]")
 		graph.add_edge(1, 2);
 
 		const auto sorting = toposort(graph);
-		REQUIRE(sorting.size() == graph.V().size());
+		REQUIRE(sorting.size() == graph.V.size());
 		{
 			auto sorted_sorting = sorting;
 			std::sort(sorted_sorting.begin(), sorted_sorting.end());
-			for(std::size_t i = 0; i < graph.V().size(); ++i)
+			for(std::size_t i = 0; i < graph.V.size(); ++i)
 				CHECK(sorted_sorting[i] == i);
 		}
 		CHECK(std::find(sorting.begin(), sorting.end(), 0) < std::find(sorting.begin(), sorting.end(), 1));
@@ -65,11 +65,11 @@ TEST_CASE("toposort", "[quiver]")
 		graph.add_edge(1, 2);
 
 		const auto sorting = toposort(graph);
-		REQUIRE(sorting.size() == graph.V().size());
+		REQUIRE(sorting.size() == graph.V.size());
 		{
 			auto sorted_sorting = sorting;
 			std::sort(sorted_sorting.begin(), sorted_sorting.end());
-			for(std::size_t i = 0; i < graph.V().size(); ++i)
+			for(std::size_t i = 0; i < graph.V.size(); ++i)
 				CHECK(sorted_sorting[i] == i);
 		}
 		CHECK(std::find(sorting.begin(), sorting.end(), 0) < std::find(sorting.begin(), sorting.end(), 1));

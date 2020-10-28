@@ -88,49 +88,117 @@ namespace quiver
 		}
 	};
 
-	template<typename graph_t>
-	class vertex_span_t
+	namespace detail
 	{
-	public:
-		using graph_type = graph_t;
-
-	private:
-		graph_type* graph;
-
-	public:
-		constexpr explicit vertex_span_t(graph_type& graph) noexcept
-		: graph(&graph)
+		template<typename adjacency_list_t, typename intermediate_t>
+		class vertex_span_t final
 		{
-		}
+			// static_assert(std::is_standard_layout_v<intermediate_t>, "could not establish standard layout-ness");
 
-		constexpr auto size()     const { return graph->vertex_size(); }
-		constexpr auto capacity() const { return graph->vertex_capacity(); }
+		public:
+			friend intermediate_t;
+			using adjacency_list_type = adjacency_list_t;
 
-		constexpr auto begin()    const { return graph->vertex_begin(); }
-		constexpr auto cbegin()   const { return graph->vertex_cbegin(); }
-		constexpr auto end()      const { return graph->vertex_end(); }
-		constexpr auto cend()     const { return graph->vertex_cend(); }
+		private:
+			constexpr adjacency_list_type* get_parent() noexcept
+			{
+				return static_cast<adjacency_list_type*>(reinterpret_cast<intermediate_t*>(reinterpret_cast<char*>(this) - offsetof(intermediate_t, V)));
+			}
+			constexpr adjacency_list_type const* get_parent() const noexcept
+			{
+				return static_cast<adjacency_list_type const*>(reinterpret_cast<intermediate_t const*>(reinterpret_cast<char const*>(this) - offsetof(intermediate_t, V)));
+			}
 
-		constexpr auto& operator[](vertex_index_t index) const { return graph->vertex_get(index); }
-		constexpr auto& get(vertex_index_t index)        const { return graph->vertex_get(index); }
+			constexpr vertex_span_t() noexcept = default;
+			constexpr vertex_span_t(vertex_span_t const&) noexcept = delete;
+			constexpr vertex_span_t(vertex_span_t&&) noexcept = delete;
+			constexpr vertex_span_t& operator=(vertex_span_t const&) noexcept = delete;
+			constexpr vertex_span_t& operator=(vertex_span_t&&) noexcept = delete;
 
-		template<typename... args_t>
-		constexpr auto emplace(args_t&&... args) const { return graph->vertex_emplace(std::forward<args_t>(args)...); }
-		constexpr auto erase(vertex_index_t index) const { return graph->vertex_erase(index); }
-	};
+		public:
+			constexpr auto size()     const { return get_parent()->vertex_size(); }
+			constexpr auto capacity() const { return get_parent()->vertex_capacity(); }
 
-	template<typename graph_t>
-	auto begin(vertex_span_t<graph_t>& graph);
-	template<typename graph_t>
-	auto begin(vertex_span_t<graph_t> const& graph);
-	template<typename graph_t>
-	auto cbegin(vertex_span_t<graph_t> const& graph);
-	template<typename graph_t>
-	auto end(vertex_span_t<graph_t>& graph);
-	template<typename graph_t>
-	auto end(vertex_span_t<graph_t> const& graph);
-	template<typename graph_t>
-	auto cend(vertex_span_t<graph_t> const& graph);
+			constexpr auto begin()          { return get_parent()->vertex_begin(); }
+			constexpr auto begin()    const { return get_parent()->vertex_begin(); }
+			constexpr auto cbegin()   const { return get_parent()->vertex_cbegin(); }
+			constexpr auto end()            { return get_parent()->vertex_end(); }
+			constexpr auto end()      const { return get_parent()->vertex_end(); }
+			constexpr auto cend()     const { return get_parent()->vertex_cend(); }
+
+			constexpr auto& operator[](vertex_index_t index)       { return get_parent()->vertex_get(index); }
+			constexpr auto& operator[](vertex_index_t index) const { return get_parent()->vertex_get(index); }
+			constexpr auto& get(vertex_index_t index)              { return get_parent()->vertex_get(index); }
+			constexpr auto& get(vertex_index_t index)        const { return get_parent()->vertex_get(index); }
+
+			template<typename... args_t>
+			constexpr auto emplace(args_t&&... args) { return get_parent()->vertex_emplace(std::forward<args_t>(args)...); }
+			constexpr auto erase(vertex_index_t index) { return get_parent()->vertex_erase(index); }
+		};
+
+		template<typename adjacency_list_t, typename intermediate_t>
+		auto begin(vertex_span_t<adjacency_list_t, intermediate_t>& graph);
+		template<typename adjacency_list_t, typename intermediate_t>
+		auto begin(vertex_span_t<adjacency_list_t, intermediate_t> const& graph);
+		template<typename adjacency_list_t, typename intermediate_t>
+		auto cbegin(vertex_span_t<adjacency_list_t, intermediate_t> const& graph);
+		template<typename adjacency_list_t, typename intermediate_t>
+		auto end(vertex_span_t<adjacency_list_t, intermediate_t>& graph);
+		template<typename adjacency_list_t, typename intermediate_t>
+		auto end(vertex_span_t<adjacency_list_t, intermediate_t> const& graph);
+		template<typename adjacency_list_t, typename intermediate_t>
+		auto cend(vertex_span_t<adjacency_list_t, intermediate_t> const& graph);
+
+		template<
+			typename edge_properties_t,
+			typename vertex_properties_t,
+			template<typename> class out_edge_container,
+			template<typename> class vertex_container,
+			typename derived_t
+		>
+		class adjacency_list_base
+		{
+			using vertices_t = vertex_container<::quiver::vertex<vertex_properties_t, out_edge_container<out_edge<edge_properties_t>>>>;
+			using adjacency_list = derived_t;
+			using vertex_span_type = vertex_span_t<adjacency_list, adjacency_list_base>;
+			friend vertex_span_type;
+
+		protected:
+			// private:
+			std::size_t m_v = 0, m_e = 0;
+			vertices_t m_vertices;
+
+			// public:
+			vertex_span_type V;
+
+			adjacency_list_base()
+			{
+			}
+			explicit adjacency_list_base(std::size_t vertices)
+			: m_v(vertices), m_vertices(vertices)
+			{
+			}
+			adjacency_list_base(adjacency_list_base const& rhs)
+			: m_v(rhs.m_v), m_e(rhs.m_e), m_vertices(rhs.m_vertices)
+			{
+			}
+			adjacency_list_base(adjacency_list_base&& rhs) noexcept
+			: m_v(std::move(rhs.m_v)), m_e(std::move(rhs.m_e)), m_vertices(std::move(rhs.m_vertices))
+			{
+			}
+			adjacency_list_base& operator=(adjacency_list_base const& rhs)
+			{
+				return *this = adjacency_list_base(rhs);
+			}
+			adjacency_list_base& operator=(adjacency_list_base&& rhs) noexcept
+			{
+				m_v = std::move(rhs.m_v);
+				m_e = std::move(rhs.m_e);
+				m_vertices = std::move(rhs.m_vertices);
+				return *this;
+			}
+		};
+	}
 
 	// no loops, no multiedges
 	template<
@@ -140,8 +208,10 @@ namespace quiver
 		template<typename> class out_edge_container = vector,
 		template<typename> class vertex_container = vector
 	>
-	class adjacency_list
+	class adjacency_list : private detail::adjacency_list_base<edge_properties_t, vertex_properties_t, out_edge_container, vertex_container, adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>>
 	{
+		using base_t = detail::adjacency_list_base<edge_properties_t, vertex_properties_t, out_edge_container, vertex_container, adjacency_list>;
+
 	public:
 		using edge_t = edge<edge_properties_t>;
 		using out_edge_t = out_edge<edge_properties_t>;
@@ -155,23 +225,19 @@ namespace quiver
 		inline static constexpr directivity_t directivity = dir;
 
 	private:
-		std::size_t m_v = 0, m_e = 0;
-		vertices_t m_vertices;
+		using base_t::m_v;
+		static_assert(std::is_same_v<decltype(m_v), std::size_t>, "");
+		using base_t::m_e;
+		static_assert(std::is_same_v<decltype(m_e), std::size_t>, "");
+		using base_t::m_vertices;
+		static_assert(std::is_same_v<decltype(m_vertices), vertices_t>, "");
 
 		static constexpr void normalize(vertex_index_t& from, vertex_index_t& to) noexcept;
-
-		bool vertex_erase_simple(vertex_index_t index);
 
 		template<typename... args_t>
 		bool add_edge_simple(vertex_index_t from, vertex_index_t to, args_t&&... args);
 		bool remove_edge_simple(vertex_index_t from, vertex_index_t to);
 		out_edge_t const* get_edge_simple(vertex_index_t from, vertex_index_t to) const noexcept;
-
-		using vertex_span_type = vertex_span_t<adjacency_list>;
-		friend class vertex_span_t<adjacency_list>;
-
-		using const_vertex_span_type = vertex_span_t<const adjacency_list>;
-		friend class vertex_span_t<const adjacency_list>;
 
 		auto vertex_size() const;
 		auto vertex_capacity() const;
@@ -190,13 +256,16 @@ namespace quiver
 		template<typename... args_t>
 		vertex_index_t vertex_emplace(args_t&&... args);
 		bool vertex_erase(vertex_index_t index);
+		bool vertex_erase_simple(vertex_index_t index);
 
 	public:
 		adjacency_list() noexcept = default;
 		explicit adjacency_list(std::size_t vertices);
 
-		constexpr vertex_span_type V() noexcept;
-		constexpr const_vertex_span_type V() const noexcept;
+		using vertex_span_type = detail::vertex_span_t<adjacency_list, base_t>;
+		friend vertex_span_type;
+		using base_t::V;
+		static_assert(std::is_same_v<decltype(V), vertex_span_type>, "");
 
 		constexpr std::size_t E() const noexcept;
 		constexpr std::size_t max_edges() const noexcept;

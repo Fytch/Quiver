@@ -28,7 +28,7 @@ namespace quiver
 	{
 		assert(n >= 3);
 		adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> result(n);
-		for(auto& vert : result.V())
+		for(auto& vert : result.V)
 			vert.out_edges.reserve(2);
 		for(vertex_index_t i = 0; i < n - 1; ++i)
 			result.add_edge(i, i + 1);
