@@ -178,20 +178,8 @@ bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::adjacency_list(std::size_t vertices)
 : base_t(vertices)
-// : m_v{ vertices }, m_vertices(vertices)
 {
 }
-
-/*template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::V noexcept -> vertex_span_type
-{
-	return vertex_span_type(*this);
-}
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-constexpr auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::V const noexcept -> const_vertex_span_type
-{
-	return const_vertex_span_type(*this);
-}*/
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 constexpr std::size_t quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::E() const noexcept
@@ -487,7 +475,7 @@ std::ostream& quiver::to_dot(std::ostream& stream, adjacency_list<dir, edge_prop
 	// edges
 	{
 		vertex_index_t vert_index = 0;
-		for(auto const& vert : graph) {
+		for(auto const& vert : graph.V) {
 			for(auto const& out_edge : vert.out_edges)
 				if constexpr(dir == directed) {
 					stream << '\t' << vert_index << "->" << out_edge.to << ";\n";
