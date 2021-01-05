@@ -13,6 +13,7 @@
 #include <quiver/connected_components.hpp>
 #include <quiver/container_interface.hpp>
 #include <quiver/disjoint_set.hpp>
+#include <quiver/dot.hpp>
 #include <quiver/exception.hpp>
 #include <quiver/families.hpp>
 #include <quiver/heaps.hpp>

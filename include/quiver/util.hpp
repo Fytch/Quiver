@@ -33,6 +33,12 @@ namespace quiver
 	{
 		return x * x;
 	}
+
+	template<typename... T>
+	constexpr bool get_false() noexcept
+	{
+		return false;
+	}
 }
 
 #endif // !QUIVER_UTIL_HPP_INCLUDED

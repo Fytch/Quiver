@@ -452,42 +452,4 @@ void quiver::swap(adjacency_list<dir, edge_properties_t, vertex_properties_t, ou
 	lhs.swap(rhs);
 }
 
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-std::ostream& quiver::to_dot(std::ostream& stream, adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph)
-{
-	if constexpr(dir == directed)
-		stream << "di";
-	stream << "graph\n";
-	stream << "{\n";
-
-	// vertices
-	for(vertex_index_t vert_index = 0; vert_index < graph.V.size(); ++vert_index)
-		stream << '\t' << vert_index << ";\n";
-
-	// edges
-	{
-		vertex_index_t vert_index = 0;
-		for(auto const& vert : graph.V) {
-			for(auto const& out_edge : vert.out_edges)
-				if constexpr(dir == directed) {
-					stream << '\t' << vert_index << "->" << out_edge.to << ";\n";
-				} else if constexpr(dir == undirected) {
-					if(vert_index <= out_edge.to)
-						stream << '\t' << vert_index << "--" << out_edge.to << ";\n";
-				}
-			++vert_index;
-		}
-	}
-
-	stream << "}\n";
-	return stream;
-}
-template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
-std::string quiver::to_dot(adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> const& graph)
-{
-	std::stringstream strstr;
-	to_dot(strstr, graph);
-	return strstr.str();
-}
-
 #endif // !QUIVER_ADJACENCY_LIST_INL_INCLUDED
