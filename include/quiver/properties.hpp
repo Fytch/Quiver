@@ -8,6 +8,7 @@
 #ifndef QUIVER_PROPERTIES_HPP_INCLUDED
 #define QUIVER_PROPERTIES_HPP_INCLUDED
 
+#include <quiver/util.hpp>
 #include <type_traits>
 #include <utility>
 
@@ -75,7 +76,10 @@ namespace quiver
 
 	// combinator of different properties
 	template<typename... T>
-	struct cmb;
+	struct cmb
+	{
+		static_assert(get_false<T...>(), "cmb<> may not be empty");
+	};
 	template<typename T, typename... U>
 	struct cmb<T, U...> : public T, public cmb<U...>
 	{
