@@ -215,8 +215,8 @@ namespace quiver
 			vertices_t m_vertices;
 
 			// public:
-			vertex_span_type V; // when renaming, the corresponding offsetof invocation must be change too
-			edge_span_type E; // when renaming, the corresponding offsetof invocation must be change too
+			vertex_span_type V; // when renaming, the corresponding offsetof invocation must be changed too
+			edge_span_type E; // when renaming, the corresponding offsetof invocation must be changed too
 
 			adjacency_list_base() noexcept
 			{
