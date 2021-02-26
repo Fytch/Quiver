@@ -22,11 +22,13 @@ TEST_CASE("adjacency_list", "[quiver]")
 		CHECK(graph.V.size() == 3);
 		CHECK(graph.E.size() == 0);
 
-		graph.E.emplace(0, 2, 5, 3.5);
+		CHECK(graph.E.emplace(0, 2, 5, 3.5));
+		CHECK(!graph.E.emplace(0, 2, 0, 0.0));
 		CHECK(graph.V.size() == 3);
 		CHECK(graph.E.size() == 1);
 
-		graph.E.emplace(2, 0, 7, 1.0);
+		CHECK(graph.E.emplace(2, 0, 7, 1.0));
+		CHECK(!graph.E.emplace(2, 0, 0, 0.0));
 		CHECK(graph.V.size() == 3);
 		CHECK(graph.E.size() == 2);
 
@@ -49,11 +51,13 @@ TEST_CASE("adjacency_list", "[quiver]")
 		CHECK(graph.V.size() == 4);
 		CHECK(graph.E.size() == 0);
 
-		graph.E.emplace(0, 2, 2.5);
+		CHECK(graph.E.emplace(0, 2, 2.5));
+		CHECK(!graph.E.emplace(0, 2, 0.0));
 		CHECK(graph.V.size() == 4);
 		CHECK(graph.E.size() == 1);
 
-		graph.E.emplace(3, 1, 1.5);
+		CHECK(graph.E.emplace(3, 1, 1.5));
+		CHECK(!graph.E.emplace(3, 1, 0.0));
 		CHECK(graph.V.size() == 4);
 		CHECK(graph.E.size() == 2);
 
@@ -70,21 +74,21 @@ TEST_CASE("adjacency_list", "[quiver]")
 		SECTION("contract")
 		{
 			graph_t graph(8);
-			graph.E.emplace(0, 2);
-			graph.E.emplace(0, 3);
-			graph.E.emplace(1, 2);
-			graph.E.emplace(2, 3);
-			graph.E.emplace(2, 4);
-			graph.E.emplace(2, 5);
-			graph.E.emplace(3, 5);
-			graph.E.emplace(4, 5);
-			graph.E.emplace(5, 6);
-			graph.E.emplace(5, 7);
+			CHECK(graph.E.emplace(0, 2));
+			CHECK(graph.E.emplace(0, 3));
+			CHECK(graph.E.emplace(1, 2));
+			CHECK(graph.E.emplace(2, 3));
+			CHECK(graph.E.emplace(2, 4));
+			CHECK(graph.E.emplace(2, 5));
+			CHECK(graph.E.emplace(3, 5));
+			CHECK(graph.E.emplace(4, 5));
+			CHECK(graph.E.emplace(5, 6));
+			CHECK(graph.E.emplace(5, 7));
 
-			CHECK(graph.V.size() == 8);
+			REQUIRE(graph.V.size() == 8);
 			CHECK(graph.E.size() == 10);
 			CHECK(graph.contract(2, 5) == true);
-			CHECK(graph.V.size() == 7);
+			REQUIRE(graph.V.size() == 7);
 			CHECK(graph.E.size() == 7);
 
 			CHECK(graph.E(0, 2) != nullptr);

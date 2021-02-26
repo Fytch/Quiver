@@ -313,6 +313,8 @@ namespace quiver
 		template<typename... args_t>
 		bool edge_emplace(vertex_index_t from, vertex_index_t to, args_t&&... args); // TODO: should return std::pair<iter, bool>
 		template<typename... args_t>
+		bool edge_emplace_simple_nonexistent(vertex_index_t from, vertex_index_t to, args_t&&... args);
+		template<typename... args_t>
 		bool edge_emplace_simple(vertex_index_t from, vertex_index_t to, args_t&&... args);
 		bool edge_erase(vertex_index_t from, vertex_index_t to);
 		bool edge_erase_simple(vertex_index_t from, vertex_index_t to);
