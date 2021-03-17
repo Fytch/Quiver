@@ -25,7 +25,10 @@ TEST_CASE("dfs", "[quiver][search]")
 		graph.E.emplace(4, 1);
 
 		std::vector<vertex_index_t> visited;
-		auto visitor = [&visited](auto const& vertex){ visited.push_back(vertex); return false; };
+		auto visitor = [&visited](vertex_index_t index){
+			visited.push_back(index);
+			return false;
+		};
 		CHECK(dfs(graph, 1, visitor) == false);
 		REQUIRE(visited.size() == graph.V.size());
 		CHECK(visited[0] == 1);
