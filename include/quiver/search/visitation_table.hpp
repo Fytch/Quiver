@@ -11,6 +11,7 @@
 #include <quiver/typedefs.hpp>
 #include <vector>
 #include <cassert>
+#include <concepts>
 
 namespace quiver
 {
@@ -52,6 +53,9 @@ namespace quiver
 			};
 		}
 	};
+
+	template<typename T>
+	concept visited_predicate = std::predicate<T, vertex_index_t>;
 }
 
 #endif // !QUIVER_SEARCH_VISITATION_TABLE_HPP_INCLUDED

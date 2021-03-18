@@ -22,11 +22,6 @@ namespace quiver
 {
 	// TODO: Thus far, I've only implemented the "always insert" variant of Dijkstra. I shall also implement the "decrease key" variant.
 
-	// visitor: bool(vertex_index_t, scalar_t)
-	// template<typename T, typename graph_t>
-	// concept has_been_visited = std::predicate<T, vertex_index_t>;
-	// weight_invokable: scalar_t(vertex_index_t, out_edge_t).
-
 	template<typename graph_t>
 	[[nodiscard]] constexpr auto dijkstra_default_weight_invokable() noexcept
 	{
@@ -82,7 +77,7 @@ namespace quiver
 
 		// TODO: let the caller choose the heap data structure
 
-		template<template<typename> typename basic_queue_entry_t, typename graph_t, typename visitor_t, typename has_been_visited_t, typename weight_invokable_t>
+		template<template<typename> typename basic_queue_entry_t, typename graph_t, typename visitor_t, visited_predicate has_been_visited_t, typename weight_invokable_t>
 		bool basic_dijkstra(graph_t& graph, std::ranges::input_range auto const& start, visitor_t visitor, has_been_visited_t has_been_visited, weight_invokable_t weight_invokable)
 		{
 			using out_edge_t = typename graph_t::out_edge_t;
@@ -124,22 +119,22 @@ namespace quiver
 	// has_been_visited shall have the signature bool(vertex_index_t)
 	// and shall return true iff the vertex has been visited by visitor.
 	// weight_invokable shall have the signature scalar_t(vertex_index_t, out_edge_t).
-	template<typename graph_t, typename visitor_t, typename has_been_visited_t, typename weight_invokable_t>
+	template<typename graph_t, typename visitor_t, visited_predicate has_been_visited_t, typename weight_invokable_t>
 	bool dijkstra(graph_t& graph, std::ranges::input_range auto const& start, visitor_t visitor, has_been_visited_t has_been_visited, weight_invokable_t weight_invokable)
 	{
 		return detail::basic_dijkstra<detail::bind_queue_entry_t<>::templ, graph_t, visitor_t, has_been_visited_t, weight_invokable_t>(graph, start, visitor, has_been_visited, weight_invokable);
 	}
-	template<typename graph_t, typename visitor_t, typename has_been_visited_t, typename weight_invokable_t>
+	template<typename graph_t, typename visitor_t, visited_predicate has_been_visited_t, typename weight_invokable_t>
 	bool dijkstra(graph_t& graph, vertex_index_t start, visitor_t visitor, has_been_visited_t has_been_visited, weight_invokable_t weight_invokable)
 	{
 		return dijkstra<graph_t, visitor_t, has_been_visited_t, weight_invokable_t>(graph, std::ranges::single_view(start), visitor, has_been_visited, weight_invokable);
 	}
-	template<typename graph_t, typename visitor_t, typename has_been_visited_t>
+	template<typename graph_t, typename visitor_t, visited_predicate has_been_visited_t>
 	bool dijkstra(graph_t& graph, std::ranges::input_range auto const& start, visitor_t visitor, has_been_visited_t has_been_visited)
 	{
 		return dijkstra<graph_t, visitor_t, has_been_visited_t>(graph, start, visitor, has_been_visited, dijkstra_default_weight_invokable<graph_t>());
 	}
-	template<typename graph_t, typename visitor_t, typename has_been_visited_t>
+	template<typename graph_t, typename visitor_t, visited_predicate has_been_visited_t>
 	bool dijkstra(graph_t& graph, vertex_index_t start, visitor_t visitor, has_been_visited_t has_been_visited)
 	{
 		return dijkstra<graph_t, visitor_t, has_been_visited_t>(graph, std::ranges::single_view(start), visitor, has_been_visited);
@@ -162,12 +157,12 @@ namespace quiver
 	// has_been_visited shall have the signature bool(vertex_index_t)
 	// and shall return true iff the vertex has been visited by visitor.
 	// weight_invokable shall have the signature scalar_t(vertex_index_t, out_edge_t).
-	template<typename graph_t, typename visitor_t, typename has_been_visited_t, typename weight_invokable_t>
+	template<typename graph_t, typename visitor_t, visited_predicate has_been_visited_t, typename weight_invokable_t>
 	bool dijkstra_shortest_path(graph_t& graph, std::ranges::input_range auto const& start, visitor_t visitor, has_been_visited_t has_been_visited, weight_invokable_t weight_invokable)
 	{
 		return detail::basic_dijkstra<detail::bind_queue_entry_t<detail::templatize<vertex_index_t>::templ>::templ, graph_t, visitor_t, has_been_visited_t, weight_invokable_t>(graph, start, visitor, has_been_visited, weight_invokable);
 	}
-	template<typename graph_t, typename visitor_t, typename has_been_visited_t, typename weight_invokable_t>
+	template<typename graph_t, typename visitor_t, visited_predicate has_been_visited_t, typename weight_invokable_t>
 	bool dijkstra_shortest_path(graph_t& graph, vertex_index_t start, visitor_t visitor, has_been_visited_t has_been_visited, weight_invokable_t weight_invokable)
 	{
 		return dijkstra_shortest_path<graph_t, visitor_t, has_been_visited_t, weight_invokable_t>(graph, std::ranges::single_view(start), visitor, has_been_visited, weight_invokable);
