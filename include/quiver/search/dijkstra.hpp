@@ -49,8 +49,8 @@ namespace quiver
 			[[nodiscard]] constexpr base_t const& as_tuple() const noexcept { return *this; }
 			[[nodiscard]] constexpr base_t      & as_tuple()       noexcept { return *this; }
 
-			[[nodiscard]] constexpr auto   const& index  () const noexcept { return std::get<0>(as_tuple()); }
-			[[nodiscard]] constexpr auto        & index  ()       noexcept { return std::get<0>(as_tuple()); }
+			[[nodiscard]] constexpr auto   const& index   () const noexcept { return std::get<0>(as_tuple()); }
+			[[nodiscard]] constexpr auto        & index   ()       noexcept { return std::get<0>(as_tuple()); }
 
 			[[nodiscard]] constexpr auto   const& distance() const noexcept { return std::get<1>(as_tuple()); }
 			[[nodiscard]] constexpr auto        & distance()       noexcept { return std::get<1>(as_tuple()); }
@@ -205,7 +205,7 @@ namespace quiver
 
 	// TODO: overloads with end node(s)
 
-	// TODO: generalize the *shortest_path overloads s.t. we can use it for BFS too
+	// if implemented, implement them for bfs_shortest_path too
 	// TODO: out iterator overloads for the *shortest_path variant
 	// TODO: maybe return the same vertex container as the graph. how would the current implementation even work if the vertex data structure were e.g. a hash map?
 	// TODO: maybe offer the functionality to store the result within the vertex data
