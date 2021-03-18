@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/Fytch/Quiver.svg?branch=master)](https://travis-ci.org/Fytch/Quiver)
 [![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.txt)
 
-Quiver is a graph theory library written in C++17. Work in progress.
+Quiver is a graph theory library written in C++20. Work in progress.
 
 ## Features
 
