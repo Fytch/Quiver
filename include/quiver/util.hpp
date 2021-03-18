@@ -10,6 +10,7 @@
 
 #include <type_traits>
 #include <utility>
+#include <limits>
 
 namespace quiver
 {
@@ -39,6 +40,9 @@ namespace quiver
 	{
 		return false;
 	}
+
+	template<typename T>
+	inline constexpr T inf = std::numeric_limits<T>::has_infinity ? std::numeric_limits<T>::infinity() : std::numeric_limits<T>::max();
 }
 
 #endif // !QUIVER_UTIL_HPP_INCLUDED

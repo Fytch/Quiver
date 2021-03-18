@@ -27,7 +27,7 @@ Quiver is a graph theory library written in C++17. Work in progress.
 
 - [x] Breadth first search
 - [x] Depth first search
-- [ ] Shortest path
+- [x] Dijkstra's algorithm
 
 ### Minimum Spanning Tree
 

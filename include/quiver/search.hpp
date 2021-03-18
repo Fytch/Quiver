@@ -10,5 +10,7 @@
 
 #include <quiver/search/bfs.hpp>
 #include <quiver/search/dfs.hpp>
+#include <quiver/search/dijkstra.hpp>
+#include <quiver/search/visitation_table.hpp>
 
 #endif // !QUIVER_SEARCH_HPP_INCLUDED
