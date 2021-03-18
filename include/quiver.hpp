@@ -11,7 +11,7 @@
 
 #include <quiver/adjacency_list.hpp>
 #include <quiver/connected_components.hpp>
-#include <quiver/container_interface.hpp>
+#include <quiver/container_traits.hpp>
 #include <quiver/disjoint_set.hpp>
 #include <quiver/dot.hpp>
 #include <quiver/exception.hpp>

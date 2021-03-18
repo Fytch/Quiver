@@ -11,7 +11,7 @@
 #include <quiver/typedefs.hpp>
 #include <quiver/util.hpp>
 #include <quiver/properties.hpp>
-#include <quiver/container_interface.hpp>
+#include <quiver/container_traits.hpp>
 #include <cstddef>
 #include <type_traits>
 #include <utility>

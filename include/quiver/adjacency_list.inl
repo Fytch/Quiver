@@ -11,7 +11,7 @@
 #include <quiver/adjacency_list.hpp>
 #include <quiver/util.hpp>
 #include <quiver/properties.hpp>
-#include <quiver/container_interface.hpp>
+#include <quiver/container_traits.hpp>
 #include <utility>
 #include <cassert>
 #include <sstream>
@@ -331,7 +331,7 @@ void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::sort_edges()
 {
-	if constexpr(is_ordered<out_edge_list_t>)
+	if constexpr(container_traits<out_edge_list_t>::is_ordered)
 		for(auto& vertex : m_vertices)
 			vertex.sort_edges();
 }
