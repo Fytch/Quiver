@@ -46,9 +46,9 @@ namespace quiver
 		template<typename visitor_t>
 		[[nodiscard]] auto hook_visitor(visitor_t& visitor) noexcept
 		{
-			return [this, &visitor](vertex_index_t index, auto&& weight) -> bool {
+			return [this, &visitor](vertex_index_t index, auto&&... tail) -> bool {
 				this->set(index);
-				return visitor(index, std::forward<decltype(weight)>(weight));
+				return visitor(index, std::forward<decltype(tail)>(tail)...);
 			};
 		}
 	};
