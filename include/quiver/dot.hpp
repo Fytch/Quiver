@@ -43,12 +43,14 @@ namespace quiver
 				assert(0 <= x && x < 16);
 				return x < 10 ? '0' + x : 'a' + (x - 10);
 			};
+			stream << '"';
 			stream << '#';
 			stream << int2hex(color.r / 16) << int2hex(color.r % 16);
 			stream << int2hex(color.g / 16) << int2hex(color.g % 16);
 			stream << int2hex(color.b / 16) << int2hex(color.b % 16);
 			if(color.a != 0xFF)
 				stream << int2hex(color.a / 16) << int2hex(color.a % 16);
+			stream << '"';
 			return stream;
 		}
 
@@ -304,6 +306,7 @@ namespace quiver
 		};
 		inline std::ostream& operator<<(std::ostream& stream, node_attributes const& na)
 		{
+			// TODO: no final ", "
 			if(na.color)
 				stream << "color=" << *na.color << ", ";
 			if(na.penwidth)
@@ -353,6 +356,7 @@ namespace quiver
 		};
 		inline std::ostream& operator<<(std::ostream& stream, edge_attributes const& ea)
 		{
+			// TODO: no final ", "
 			if(ea.color)
 				stream << "color=" << *ea.color << ", ";
 			if(ea.penwidth)
@@ -424,6 +428,7 @@ namespace quiver
 			stream << "\tedge [" << global_edge_attributes << "]\n";
 
 		// vertices
+		// TODO: dont emit vertices if they don't have special attribs and they are part of at least one edge
 		{
 			vertex_index_t vert_index = 0;
 			for(auto const& vert : graph.V) {
@@ -475,6 +480,7 @@ namespace quiver
 		stream << "{\n";
 
 		// vertices
+		// TODO: dont emit vertices if they don't have special attribs and they are part of at least one edge. WE ALREADY DO IT HALFWAYS IN THE ABOVE OVERLOAD
 		for(vertex_index_t vert_index = 0; vert_index < graph.V.size(); ++vert_index)
 			stream << '\t' << vert_index << ";\n";
 
