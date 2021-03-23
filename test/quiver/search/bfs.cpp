@@ -36,5 +36,14 @@ TEST_CASE("bfs", "[quiver][search]")
 		CHECK(visited[2] == 2);
 		CHECK(visited[3] == 4);
 		CHECK(visited[4] == 0);
+
+		const auto shortest_path = bfs_shortest_path(graph, 1);
+		using pair_t = decltype(shortest_path)::value_type;
+		REQUIRE(shortest_path.size() == graph.V.size());
+		CHECK(shortest_path[0] == pair_t(2, 2));
+		CHECK(shortest_path[1] == pair_t(0, 1));
+		CHECK(shortest_path[2] == pair_t(1, 1));
+		CHECK(shortest_path[3] == pair_t(1, 1));
+		CHECK((shortest_path[4] == pair_t(2, 2) || shortest_path[4] == pair_t(2, 3)));
 	}
 }
