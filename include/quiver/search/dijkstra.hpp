@@ -14,7 +14,6 @@
 #include <quiver/util.hpp>
 #include <type_traits>
 #include <utility>
-#include <tuple>
 #include <cassert>
 #include <ranges>
 
@@ -34,79 +33,95 @@ namespace quiver
 
 	namespace detail
 	{
-		template<typename scalar_t, template<typename> typename... additional_t>
-		class queue_entry_t : public std::tuple<vertex_index_t, scalar_t, additional_t<scalar_t>...>
+		template<typename out_edge_t, typename scalar_t, template<typename, typename, typename> typename... additional_t>
+		struct dijkstra_queue_entry_t : public additional_t<out_edge_t, scalar_t, dijkstra_queue_entry_t<out_edge_t, scalar_t, additional_t...>>...
 		{
-			using base_t = std::tuple<vertex_index_t, scalar_t, additional_t<scalar_t>...>;
+			vertex_index_t index;
+			scalar_t distance;
 
-		public:
-			template<typename... discard_t>
-			[[nodiscard]] constexpr queue_entry_t(vertex_index_t index, scalar_t distance, additional_t<scalar_t>... additional, discard_t&&...)
-			: base_t(index, distance, additional...)
+			[[nodiscard]] constexpr dijkstra_queue_entry_t(vertex_index_t index)
+			: additional_t<out_edge_t, scalar_t, dijkstra_queue_entry_t>(std::as_const(index))..., index(index), distance(0)
+			{
+			}
+			[[nodiscard]] constexpr dijkstra_queue_entry_t(vertex_index_t index, scalar_t&& distance, out_edge_t const& edge, dijkstra_queue_entry_t&& previous)
+			: additional_t<out_edge_t, scalar_t, dijkstra_queue_entry_t>(std::as_const(index), std::as_const(distance), edge, std::as_const(previous))..., index(index), distance(std::move(previous.distance) + std::move(distance))
 			{
 			}
 
-			[[nodiscard]] constexpr base_t const& as_tuple() const noexcept { return *this; }
-			[[nodiscard]] constexpr base_t      & as_tuple()       noexcept { return *this; }
-
-			[[nodiscard]] constexpr auto   const& index   () const noexcept { return std::get<0>(as_tuple()); }
-			[[nodiscard]] constexpr auto        & index   ()       noexcept { return std::get<0>(as_tuple()); }
-
-			[[nodiscard]] constexpr auto   const& distance() const noexcept { return std::get<1>(as_tuple()); }
-			[[nodiscard]] constexpr auto        & distance()       noexcept { return std::get<1>(as_tuple()); }
+			template<typename invocable_t>
+			constexpr decltype(auto) apply_to(invocable_t invocable) const
+			{
+				return invocable(index, distance, this->additional_t<out_edge_t, scalar_t, dijkstra_queue_entry_t>::get()...);
+			}
 		};
-		template<typename scalar_t, template<typename> typename... additional_t>
-		[[nodiscard]] constexpr bool operator<(queue_entry_t<scalar_t, additional_t...> const& lhs, queue_entry_t<scalar_t, additional_t...> const& rhs)
+		template<typename out_edge_t, typename scalar_t, template<typename, typename, typename> typename... additional_t>
+		[[nodiscard]] constexpr bool operator<(dijkstra_queue_entry_t<out_edge_t, scalar_t, additional_t...> const& lhs, dijkstra_queue_entry_t<out_edge_t, scalar_t, additional_t...> const& rhs)
 		{
-			return lhs.distance() < rhs.distance();
+			return lhs.distance < rhs.distance;
 		}
 
-		template<template<typename> typename... additional_t>
-		struct bind_queue_entry_t
+		template<template<typename, typename, typename> typename... additional_t>
+		struct bind_dijkstra_queue_entry_t
 		{
-			template<typename scalar_t>
-			using templ = queue_entry_t<scalar_t, additional_t...>;
+			template<typename out_edge_t, typename scalar_t>
+			using templ = dijkstra_queue_entry_t<out_edge_t, scalar_t, additional_t...>;
 		};
 
-		template<typename T>
-		struct templatize
+		template<typename out_edge_t, typename scalar_t, typename dijkstra_queue_entry_t>
+		struct dijkstra_predecessor_t
 		{
-			template<typename scalar_t>
-			using templ = T;
+			vertex_index_t predecessor;
+
+			[[nodiscard]] constexpr dijkstra_predecessor_t(vertex_index_t index) noexcept
+			: predecessor(index)
+			{
+			}
+			[[nodiscard]] constexpr dijkstra_predecessor_t(vertex_index_t index, scalar_t const& distance, out_edge_t const& edge, dijkstra_queue_entry_t const& previous) noexcept
+			: predecessor(previous.index)
+			{
+				(void)index; // -Wunused-parameter
+				(void)distance; // -Wunused-parameter
+				(void)edge; // -Wunused-parameter
+			}
+
+			[[nodiscard]] constexpr vertex_index_t const& get() const noexcept
+			{
+				return predecessor;
+			}
 		};
 
 		// TODO: let the caller choose the heap data structure
 
-		template<template<typename> typename basic_queue_entry_t, typename graph_t, typename visitor_t, visited_predicate has_been_visited_t, typename weight_invokable_t>
+		template<template<typename, typename> typename basic_queue_entry_t, typename graph_t, typename visitor_t, visited_predicate has_been_visited_t, typename weight_invokable_t>
 		bool basic_dijkstra(graph_t& graph, std::ranges::input_range auto const& start, visitor_t visitor, has_been_visited_t has_been_visited, weight_invokable_t weight_invokable)
 		{
 			using out_edge_t = typename graph_t::out_edge_t;
 			using scalar_t = std::invoke_result_t<weight_invokable_t, vertex_index_t, const out_edge_t>;
-			using queue_entry_t = basic_queue_entry_t<scalar_t>;
+			using queue_entry_t = basic_queue_entry_t<out_edge_t, scalar_t>;
 
 			binary_heap<queue_entry_t> queue;
 			for(vertex_index_t index : start) {
 				assert(index < graph.V.size());
-				queue.push(index, scalar_t{}, index);
+				queue.push(index);
 			}
 
 			do {
 				// The reason we don't already .extract_top here is because it
 				// causes unnecessary workload in case visitor returns true.
 				queue_entry_t const& top = queue.top();
-				if(has_been_visited(top.index())) {
+				if(has_been_visited(std::as_const(top.index))) {
 					queue.pop();
 					continue;
 				}
-				if(std::apply(visitor, top.as_tuple()))
+				if(top.apply_to(visitor))
 					return true;
 
 				queue_entry_t extracted = queue.extract_top();
-				for(out_edge_t const& edge : graph.V[extracted.index()].out_edges)
+				for(out_edge_t const& edge : graph.V[extracted.index].out_edges)
 					if(!has_been_visited(edge.to)) {
-						scalar_t&& edge_weight = weight_invokable(extracted.index(), edge);
-						assert(std::as_const(extracted.distance()) + std::as_const(edge_weight) >= std::as_const(extracted.distance()));
-						queue.push(edge.to, std::move(extracted.distance()) + std::move(edge_weight), extracted.index());
+						scalar_t&& edge_weight = weight_invokable(std::as_const(extracted.index), edge);
+						assert(std::as_const(extracted.distance) + std::as_const(edge_weight) >= std::as_const(extracted.distance));
+						queue.push(edge.to, std::move(edge_weight), edge, std::move(extracted));
 					}
 			} while(!queue.empty());
 			return false;
@@ -122,7 +137,7 @@ namespace quiver
 	template<typename graph_t, typename visitor_t, visited_predicate has_been_visited_t, typename weight_invokable_t>
 	bool dijkstra(graph_t& graph, std::ranges::input_range auto const& start, visitor_t visitor, has_been_visited_t has_been_visited, weight_invokable_t weight_invokable)
 	{
-		return detail::basic_dijkstra<detail::bind_queue_entry_t<>::templ, graph_t, visitor_t, has_been_visited_t, weight_invokable_t>(graph, start, visitor, has_been_visited, weight_invokable);
+		return detail::basic_dijkstra<detail::bind_dijkstra_queue_entry_t<>::templ, graph_t, visitor_t, has_been_visited_t, weight_invokable_t>(graph, start, visitor, has_been_visited, weight_invokable);
 	}
 	template<typename graph_t, typename visitor_t, visited_predicate has_been_visited_t, typename weight_invokable_t>
 	bool dijkstra(graph_t& graph, vertex_index_t start, visitor_t visitor, has_been_visited_t has_been_visited, weight_invokable_t weight_invokable)
@@ -160,7 +175,7 @@ namespace quiver
 	template<typename graph_t, typename visitor_t, visited_predicate has_been_visited_t, typename weight_invokable_t>
 	bool dijkstra_shortest_path(graph_t& graph, std::ranges::input_range auto const& start, visitor_t visitor, has_been_visited_t has_been_visited, weight_invokable_t weight_invokable)
 	{
-		return detail::basic_dijkstra<detail::bind_queue_entry_t<detail::templatize<vertex_index_t>::templ>::templ, graph_t, visitor_t, has_been_visited_t, weight_invokable_t>(graph, start, visitor, has_been_visited, weight_invokable);
+		return detail::basic_dijkstra<detail::bind_dijkstra_queue_entry_t<detail::dijkstra_predecessor_t>::templ, graph_t, visitor_t, has_been_visited_t, weight_invokable_t>(graph, start, visitor, has_been_visited, weight_invokable);
 	}
 	template<typename graph_t, typename visitor_t, visited_predicate has_been_visited_t, typename weight_invokable_t>
 	bool dijkstra_shortest_path(graph_t& graph, vertex_index_t start, visitor_t visitor, has_been_visited_t has_been_visited, weight_invokable_t weight_invokable)
@@ -209,6 +224,7 @@ namespace quiver
 	// TODO: out iterator overloads for the *shortest_path variant
 	// TODO: maybe return the same vertex container as the graph. how would the current implementation even work if the vertex data structure were e.g. a hash map?
 	// TODO: maybe offer the functionality to store the result within the vertex data
+	// TODO: offer possibility to only get predecessors, or only distance
 }
 
 #endif // !QUIVER_SEARCH_DIJKSTRA_HPP_INCLUDED
