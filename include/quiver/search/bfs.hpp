@@ -43,6 +43,13 @@ namespace quiver
 			}
 		};
 
+		template<template<typename, typename> typename... additional_t>
+		struct bind_bfs_queue_entry_t
+		{
+			template<typename out_edge_t>
+			using templ = bfs_queue_entry_t<out_edge_t, additional_t...>;
+		};
+
 		template<typename out_edge_t, typename bfs_queue_entry_t>
 		struct bfs_distance_t
 		{
@@ -90,11 +97,12 @@ namespace quiver
 
 		// TODO: can we somehow remove "enqueued" in favor of "has_been_visited" but without allowing multiple insertions into the queue?
 
-		template<typename queue_entry_t, typename graph_t, typename visitor_t>
+		template<template<typename> typename basic_queue_entry_t, typename graph_t, typename visitor_t>
 		bool basic_bfs(graph_t& graph, std::ranges::input_range auto const& start, visitor_t visitor)
 		{
 			using vertex_t = copy_const<graph_t, typename graph_t::vertex_t>;
 			using out_edge_t = typename graph_t::out_edge_t;
+			using queue_entry_t = basic_queue_entry_t<out_edge_t>;
 
 			std::vector<bool> enqueued(graph.V.size(), false);
 			std::queue<queue_entry_t> neighbors;
@@ -129,8 +137,7 @@ namespace quiver
 	template<typename graph_t, typename visitor_t>
 	bool bfs(graph_t& graph, std::ranges::input_range auto const& start, visitor_t visitor)
 	{
-		using out_edge_t = typename graph_t::out_edge_t;
-		return detail::basic_bfs<detail::bfs_queue_entry_t<out_edge_t>, graph_t, visitor_t>(graph, start, visitor);
+		return detail::basic_bfs<detail::bind_bfs_queue_entry_t<>::templ, graph_t, visitor_t>(graph, start, visitor);
 	}
 	template<typename graph_t, typename visitor_t>
 	bool bfs(graph_t& graph, vertex_index_t start, visitor_t visitor)
@@ -146,8 +153,7 @@ namespace quiver
 	template<typename graph_t, typename visitor_t>
 	bool bfs_shortest_path(graph_t& graph, std::ranges::input_range auto const& start, visitor_t visitor)
 	{
-		using out_edge_t = typename graph_t::out_edge_t;
-		return detail::basic_bfs<detail::bfs_queue_entry_t<out_edge_t, detail::bfs_distance_t, detail::bfs_predecessor_t>, graph_t, visitor_t>(graph, start, visitor);
+		return detail::basic_bfs<detail::bind_bfs_queue_entry_t<detail::bfs_distance_t, detail::bfs_predecessor_t>::templ, graph_t, visitor_t>(graph, start, visitor);
 	}
 	template<typename graph_t, typename visitor_t>
 	bool bfs_shortest_path(graph_t& graph, vertex_index_t start, visitor_t visitor)
