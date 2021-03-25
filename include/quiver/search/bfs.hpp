@@ -31,8 +31,8 @@ namespace quiver
 			: additional_t<out_edge_t, bfs_queue_entry_t>(index)..., index(index)
 			{
 			}
-			[[nodiscard]] constexpr bfs_queue_entry_t(vertex_index_t index, out_edge_t const& edge, bfs_queue_entry_t const& previous)
-			: additional_t<out_edge_t, bfs_queue_entry_t>(index, edge, previous)..., index(index)
+			[[nodiscard]] constexpr bfs_queue_entry_t(vertex_index_t index, out_edge_t const& edge, bfs_queue_entry_t&& previous)
+			: additional_t<out_edge_t, bfs_queue_entry_t>(std::as_const(index), edge, std::as_const(previous))..., index(index)
 			{
 			}
 
@@ -113,7 +113,7 @@ namespace quiver
 			}
 
 			do {
-				const queue_entry_t front = neighbors.front();
+				queue_entry_t front = neighbors.front();
 				assert(enqueued[front.index]);
 				vertex_t& vertex = graph.V[front.index];
 
@@ -123,7 +123,7 @@ namespace quiver
 				neighbors.pop();
 				for(out_edge_t const& edge : vertex.out_edges)
 					if(!enqueued[edge.to]) {
-						neighbors.emplace(edge.to, edge, front);
+						neighbors.emplace(edge.to, edge, std::move(front));
 						enqueued[edge.to] = true;
 					}
 			} while(!neighbors.empty());
