@@ -76,13 +76,13 @@ namespace quiver
 
 	// combinator of different properties
 	template<typename... T>
-	struct cmb
-	{
-		static_assert(get_false<T...>(), "cmb<> may not be empty");
-	};
+	struct cmb;
 	template<typename T, typename... U>
 	struct cmb<T, U...> : public T, public cmb<U...>
 	{
+		constexpr cmb() noexcept(std::is_nothrow_default_constructible_v<T> && std::is_nothrow_default_constructible_v<cmb<U...>>)
+		{
+		}
 		template<typename head_t, typename... tail_t>
 		constexpr cmb(head_t&& head, tail_t&&... tail) noexcept(std::is_nothrow_constructible_v<T, head_t> && std::is_nothrow_constructible_v<cmb<U...>, tail_t...>)
 		: T(std::forward<head_t>(head)), cmb<U...>(std::forward<tail_t>(tail)...)
