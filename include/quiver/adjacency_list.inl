@@ -14,7 +14,6 @@
 #include <quiver/container_traits.hpp>
 #include <utility>
 #include <cassert>
-#include <sstream>
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 constexpr void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::normalize(vertex_index_t& from, vertex_index_t& to) noexcept

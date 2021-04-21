@@ -12,12 +12,10 @@
 #include <quiver/util.hpp>
 #include <quiver/properties.hpp>
 #include <quiver/container_traits.hpp>
-#include <cstddef>
 #include <type_traits>
 #include <utility>
+#include <cstddef>
 #include <algorithm>
-#include <ostream>
-#include <string>
 
 namespace quiver
 {
