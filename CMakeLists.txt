@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.12)
 project(Quiver CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -49,8 +49,8 @@ if(QUIVER_BUILD_TESTS)
 	FetchContent_Declare(
 		Catch2
 		GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-		GIT_TAG        87074da73ecb1c2e7c35fd14f50ca21c4c002adc
-		# GIT_TAG        v2.13.2
+		GIT_TAG        5c88067bd339465513af4aec606bd2292f1b594a
+		# GIT_TAG        v2.13.6
 	)
 	FetchContent_MakeAvailable(Catch2)
 
