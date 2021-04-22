@@ -36,11 +36,31 @@ namespace quiver
 	{
 		T weight;
 
+		constexpr wt(wt& rhs)
+		: weight(rhs.weight)
+		{
+		}
+		constexpr wt(wt const& rhs)
+		: weight(rhs.weight)
+		{
+		}
+		constexpr wt(wt&& rhs)
+		: weight(std::move(rhs.weight))
+		{
+		}
+		constexpr wt(wt const&& rhs)
+		: weight(std::move(rhs.weight))
+		{
+		}
+
 		template<typename... args_t>
 		constexpr wt(args_t&&... args) noexcept(std::is_nothrow_constructible_v<T, args_t...>)
 		: weight(std::forward<args_t>(args)...)
 		{
 		}
+
+		constexpr wt& operator=(wt const& rhs) = default;
+		constexpr wt& operator=(wt&& rhs) = default;
 	};
 	QUIVER_DEFINE_PROPERTY_CHECKER(weight)
 	template<typename graph_t>
@@ -58,11 +78,31 @@ namespace quiver
 	{
 		T capacity;
 
+		constexpr cap(cap& rhs)
+		: capacity(rhs.capacity)
+		{
+		}
+		constexpr cap(cap const& rhs)
+		: capacity(rhs.capacity)
+		{
+		}
+		constexpr cap(cap&& rhs)
+		: capacity(std::move(rhs.capacity))
+		{
+		}
+		constexpr cap(cap const&& rhs)
+		: capacity(std::move(rhs.capacity))
+		{
+		}
+
 		template<typename... args_t>
 		constexpr cap(args_t&&... args) noexcept(std::is_nothrow_constructible_v<T, args_t...>)
 		: capacity(std::forward<args_t>(args)...)
 		{
 		}
+
+		constexpr cap& operator=(cap const& rhs) = default;
+		constexpr cap& operator=(cap&& rhs) = default;
 	};
 	QUIVER_DEFINE_PROPERTY_CHECKER(capacity)
 	template<typename graph_t>
@@ -80,14 +120,36 @@ namespace quiver
 	template<typename T, typename... U>
 	struct cmb<T, U...> : public T, public cmb<U...>
 	{
-		constexpr cmb() noexcept(std::is_nothrow_default_constructible_v<T> && std::is_nothrow_default_constructible_v<cmb<U...>>)
+		constexpr cmb()
 		{
 		}
+
+		// This is a bit annoying but we need to do this, otherwise the template constructor absorbs certain copy constructions.
+		constexpr cmb(cmb& rhs)
+		: T(static_cast<T&>(rhs)), cmb<U...>(static_cast<cmb<U...>&>(rhs))
+		{
+		}
+		constexpr cmb(cmb const& rhs)
+		: T(static_cast<T const&>(rhs)), cmb<U...>(static_cast<cmb<U...> const&>(rhs))
+		{
+		}
+		constexpr cmb(cmb&& rhs)
+		: T(static_cast<T&&>(rhs)), cmb<U...>(static_cast<cmb<U...>&&>(rhs))
+		{
+		}
+		constexpr cmb(cmb const&& rhs)
+		: T(static_cast<T const&&>(rhs)), cmb<U...>(static_cast<cmb<U...> const&&>(rhs))
+		{
+		}
+
 		template<typename head_t, typename... tail_t>
-		constexpr cmb(head_t&& head, tail_t&&... tail) noexcept(std::is_nothrow_constructible_v<T, head_t> && std::is_nothrow_constructible_v<cmb<U...>, tail_t...>)
+		constexpr cmb(head_t&& head, tail_t&&... tail)
 		: T(std::forward<head_t>(head)), cmb<U...>(std::forward<tail_t>(tail)...)
 		{
 		}
+
+		constexpr cmb& operator=(cmb const& rhs) = default;
+		constexpr cmb& operator=(cmb&& rhs) = default;
 	};
 	template<>
 	struct cmb<>
