@@ -12,20 +12,20 @@
 #include <type_traits>
 #include <utility>
 
-#define QUIVER_DEFINE_PROPERTY_CHECKER(property)						\
-template<typename T>													\
-class has_##property													\
-{																		\
-    template<typename U>												\
-	static std::true_type check(decltype(&U::property)*);				\
-    template<typename U>												\
-	static std::false_type check(...);									\
-public:																	\
-    using type = decltype(check<T>(0));									\
-    using value_type = typename type::value_type;						\
-    inline static constexpr value_type value = type::value;				\
-};																		\
-template<typename T>													\
+#define QUIVER_DEFINE_PROPERTY_CHECKER(property)                        \
+template<typename T>                                                    \
+class has_##property                                                    \
+{                                                                       \
+    template<typename U>                                                \
+    static std::true_type check(decltype(&U::property)*);               \
+    template<typename U>                                                \
+    static std::false_type check(...);                                  \
+public:                                                                 \
+    using type = decltype(check<T>(0));                                 \
+    using value_type = typename type::value_type;                       \
+    inline static constexpr value_type value = type::value;             \
+};                                                                      \
+template<typename T>                                                    \
 inline constexpr bool has_##property##_v = has_##property <T>::value;
 
 namespace quiver
