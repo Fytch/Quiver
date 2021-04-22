@@ -76,7 +76,6 @@ Quiver is a graph theory library written in C++20. Work in progress.
 ### Miscellaneous
 
 - [x] Topological Sorting
-- [x] Convert directed to undirected graph
 - [x] Regularity
 - [ ] Strong regularity
 - [ ] Isomorphism check

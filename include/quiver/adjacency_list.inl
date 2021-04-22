@@ -16,6 +16,19 @@
 #include <cassert>
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+template<quiver::directivity_t rhs_dir, typename rhs_edge_properties_t, typename rhs_vertex_properties_t, template<typename> class rhs_out_edge_container, template<typename> class rhs_vertex_container>
+quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::adjacency_list(adjacency_list<rhs_dir, rhs_edge_properties_t, rhs_vertex_properties_t, rhs_out_edge_container, rhs_vertex_container> const& rhs)
+: base_t(rhs)
+{
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+template<quiver::directivity_t rhs_dir, typename rhs_edge_properties_t, typename rhs_vertex_properties_t, template<typename> class rhs_out_edge_container, template<typename> class rhs_vertex_container>
+quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::adjacency_list(adjacency_list<rhs_dir, rhs_edge_properties_t, rhs_vertex_properties_t, rhs_out_edge_container, rhs_vertex_container>&& rhs) noexcept
+: base_t(std::move(rhs))
+{
+}
+
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
 constexpr void quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::normalize(vertex_index_t& from, vertex_index_t& to) noexcept
 {
 	if(from > to)
@@ -317,6 +330,59 @@ auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 	}
 	assert(m_e == 0);
 	return std::move(*this);
+}
+
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::to_directed() const& -> adjacency_list<directed, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>
+{
+	using result_t = adjacency_list<directed, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>;
+	return result_t(*this);
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::to_directed() && -> adjacency_list<directed, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>
+{
+	using result_t = adjacency_list<directed, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>;
+	return result_t(std::move(*this));
+}
+
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::to_undirected() const& -> adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>
+{
+	using result_t = adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>;
+	if constexpr(directivity == directed)
+	{
+		// TODO: enforce that there are no back and forths in the original directed graph. this can be caught by checking emplace's return value
+		result_t result;
+		result.V.reserve(V.size());
+		for(auto const& vertex : m_vertices)
+			result.V.emplace(vertex.properties());
+		for(vertex_index_t v = 0; v < V.size(); ++v)
+			for(auto const& out_edge : V[v].out_edges)
+				result.E.emplace(v, out_edge.to, out_edge.properties());
+		return result;
+	}
+	else
+	{
+		return *this;
+	}
+}
+template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>
+auto quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>::to_undirected() && -> adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>
+{
+	using result_t = adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>;
+	if constexpr(directivity == directed)
+	{
+		// TODO: enforce that there are no back and forths in the original directed graph
+		result_t result(std::move(*this));
+		for(vertex_index_t v = 0; v < result.V.size(); ++v)
+			for(auto const& out_edge : result.V[v].out_edges)
+				result.edge_emplace_simple(out_edge.to, v, out_edge.properties());
+		return result;
+	}
+	else
+	{
+		return std::move(*this);
+	}
 }
 
 template<quiver::directivity_t dir, typename edge_properties_t, typename vertex_properties_t, template<typename> class out_edge_container, template<typename> class vertex_container>

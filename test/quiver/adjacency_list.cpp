@@ -27,6 +27,19 @@ TEST_CASE("adjacency_list", "[quiver]")
 		CHECK(graph.V.size() == 3);
 		CHECK(graph.E.size() == 1);
 
+		const auto undirected = graph.to_undirected();
+
+		CHECK(undirected.V.size() == 3);
+		CHECK(undirected.E.size() == 1);
+
+		REQUIRE(undirected.E(0, 2) != nullptr);
+		CHECK(undirected.E(0, 2)->weight == 5);
+		CHECK(undirected.E(0, 2)->capacity == 3.5);
+
+		REQUIRE(undirected.E(2, 0) != nullptr);
+		CHECK(undirected.E(2, 0)->weight == 5);
+		CHECK(undirected.E(2, 0)->capacity == 3.5);
+
 		CHECK(graph.E.emplace(2, 0, 7, 1.0));
 		CHECK(!graph.E.emplace(2, 0, 0, 0.0));
 		CHECK(graph.V.size() == 3);
@@ -55,6 +68,17 @@ TEST_CASE("adjacency_list", "[quiver]")
 		CHECK(!graph.E.emplace(0, 2, 0.0));
 		CHECK(graph.V.size() == 4);
 		CHECK(graph.E.size() == 1);
+
+		const auto directed = graph.to_directed();
+
+		CHECK(directed.V.size() == 4);
+		CHECK(directed.E.size() == 2);
+
+		REQUIRE(directed.E(0, 2) != nullptr);
+		CHECK(directed.E(0, 2)->weight == 2.5);
+
+		REQUIRE(directed.E(2, 0) != nullptr);
+		CHECK(directed.E(2, 0)->weight == 2.5);
 
 		CHECK(graph.E.emplace(3, 1, 1.5));
 		CHECK(!graph.E.emplace(3, 1, 0.0));

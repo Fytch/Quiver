@@ -200,6 +200,15 @@ namespace quiver
 		>
 		class adjacency_list_base
 		{
+			template<
+				typename rhs_edge_properties_t,
+				typename rhs_vertex_properties_t,
+				template<typename> class rhs_out_edge_container,
+				template<typename> class rhs_vertex_container,
+				typename rhs_derived_t
+			>
+			friend class adjacency_list_base;
+
 			using vertices_t = vertex_container<::quiver::vertex<vertex_properties_t, out_edge_container<out_edge<edge_properties_t>>>>;
 			using adjacency_list = derived_t;
 			using vertex_span_type = vertex_span_t<adjacency_list, adjacency_list_base>;
@@ -223,6 +232,7 @@ namespace quiver
 			: m_v(vertices), m_vertices(vertices)
 			{
 			}
+
 			adjacency_list_base(adjacency_list_base const& rhs)
 			: m_v(rhs.m_v), m_e(rhs.m_e), m_vertices(rhs.m_vertices)
 			{
@@ -231,6 +241,30 @@ namespace quiver
 			: m_v(std::move(rhs.m_v)), m_e(std::move(rhs.m_e)), m_vertices(std::move(rhs.m_vertices))
 			{
 			}
+
+			template<
+				typename rhs_edge_properties_t,
+				typename rhs_vertex_properties_t,
+				template<typename> class rhs_out_edge_container,
+				template<typename> class rhs_vertex_container,
+				typename rhs_derived_t
+			>
+			adjacency_list_base(adjacency_list_base<rhs_edge_properties_t, rhs_vertex_properties_t, rhs_out_edge_container, rhs_vertex_container, rhs_derived_t> const& rhs)
+			: m_v(rhs.m_v), m_e(rhs.m_e), m_vertices(rhs.m_vertices)
+			{
+			}
+			template<
+				typename rhs_edge_properties_t,
+				typename rhs_vertex_properties_t,
+				template<typename> class rhs_out_edge_container,
+				template<typename> class rhs_vertex_container,
+				typename rhs_derived_t
+			>
+			adjacency_list_base(adjacency_list_base<rhs_edge_properties_t, rhs_vertex_properties_t, rhs_out_edge_container, rhs_vertex_container, rhs_derived_t>&& rhs) noexcept
+			: m_v(std::move(rhs.m_v)), m_e(std::move(rhs.m_e)), m_vertices(std::move(rhs.m_vertices))
+			{
+			}
+
 			adjacency_list_base& operator=(adjacency_list_base const& rhs)
 			{
 				return *this = adjacency_list_base(rhs);
@@ -255,6 +289,15 @@ namespace quiver
 	>
 	class adjacency_list : private detail::adjacency_list_base<edge_properties_t, vertex_properties_t, out_edge_container, vertex_container, adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container>>
 	{
+		template<
+			directivity_t rhs_dir,
+			typename rhs_edge_properties_t,
+			typename rhs_vertex_properties_t,
+			template<typename> class rhs_out_edge_container,
+			template<typename> class rhs_vertex_container
+		>
+		friend class adjacency_list;
+
 		using base_t = detail::adjacency_list_base<edge_properties_t, vertex_properties_t, out_edge_container, vertex_container, adjacency_list>;
 
 	public:
@@ -270,6 +313,23 @@ namespace quiver
 		inline static constexpr directivity_t directivity = dir;
 
 	private:
+		template<
+			directivity_t rhs_dir,
+			typename rhs_edge_properties_t,
+			typename rhs_vertex_properties_t,
+			template<typename> class rhs_out_edge_container,
+			template<typename> class rhs_vertex_container
+		>
+		explicit adjacency_list(adjacency_list<rhs_dir, rhs_edge_properties_t, rhs_vertex_properties_t, rhs_out_edge_container, rhs_vertex_container> const& rhs);
+		template<
+			directivity_t rhs_dir,
+			typename rhs_edge_properties_t,
+			typename rhs_vertex_properties_t,
+			template<typename> class rhs_out_edge_container,
+			template<typename> class rhs_vertex_container
+		>
+		explicit adjacency_list(adjacency_list<rhs_dir, rhs_edge_properties_t, rhs_vertex_properties_t, rhs_out_edge_container, rhs_vertex_container>&& rhs) noexcept;
+
 		using base_t::m_v;
 		static_assert(std::is_same_v<decltype(m_v), std::size_t>);
 		using base_t::m_e;
@@ -337,6 +397,12 @@ namespace quiver
 
 		adjacency_list strip_edges() const&;
 		adjacency_list&& strip_edges() &&;
+
+		adjacency_list<directed, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> to_directed() const&;
+		adjacency_list<directed, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> to_directed() &&;
+
+		adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> to_undirected() const&;
+		adjacency_list<undirected, edge_properties_t, vertex_properties_t, out_edge_container, vertex_container> to_undirected() &&;
 
 		template<typename invokable_t>
 		void transform_outs(invokable_t invokable);
