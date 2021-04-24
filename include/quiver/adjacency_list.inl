@@ -257,7 +257,7 @@ bool quiver::adjacency_list<dir, edge_properties_t, vertex_properties_t, out_edg
 		assert((edge_get_simple(from, to) == nullptr) == (edge_get_simple(to, from) == nullptr));
 		const bool removed = edge_erase_simple(from, to);
 		if(removed)
-			edge_erase_simple(from, to); // TODO: strong exception safety
+			edge_erase_simple(to, from); // TODO: strong exception safety
 		return removed;
 	}
 }
